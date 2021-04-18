@@ -9,6 +9,10 @@ public class Usuario {
     public String nombreUsuario;
     public String password;
     public Permiso permiso;
+    
+    public void setPassword(String newPass){
+        password = newPass;
+    }
 
 }
 
