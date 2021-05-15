@@ -1,19 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.obligatorio1.obligatorio1.Dominio;
 
 import java.util.ArrayList;
 
-/**
- *
- * @author tomasamado
- */
 public class ControladorCarpeta {
     public ArrayList<Carpeta> carpetasRuta;
     public Carpeta directorioActual;
+    
+      public ControladorCarpeta(){
+         carpetasRuta = null;
+         directorioActual = null;
+     }
     
     public String pwd(){
         String ruta = "/";
@@ -41,7 +37,7 @@ public class ControladorCarpeta {
             ArrayList<Carpeta> directoriosExistentes = directorioActual.carpetas;
             for (Carpeta directorio: directoriosExistentes){
                 if (directorio.nombreDirecto.equals(nombreDir)){
-//                    directorio.borrarCarpeta();
+                    directorio.borrarCarpeta(directorio.nombreDirecto);
                 }
             }
             return "Se borro el directorio";
@@ -69,7 +65,77 @@ public class ControladorCarpeta {
         }
     }
     
-//     public String echo(String texto, String nombreArchivo){
-//         return "string ";
-//     }
+     public String echo(String texto, String nombreArchivo){
+        if(nombreArchivo.isEmpty()){
+            return "No se puede agregar el texto un archivo sin nombre";
+        }else {
+            for(Archivo arch: directorioActual.archivos){
+                if (arch.nombreArch.equals(nombreArchivo)){
+                    arch.linea.add(texto);
+                }
+            }
+            return "Se agrego el texto al archivo";
+        }
+     }
+     
+     public String mv(String origen, String destino){
+         if (origen.isBlank() || destino.isBlank()){
+             return "No es posible mover un archivo sin ruta de origen o destino";
+         }else{
+             if (pwd().equals(origen)){
+                 Carpeta directorioAMover = directorioActual;
+             }
+         }
+         return "";
+     };
+     
+      public String cp(String origen, String destino){
+         if (origen.isBlank() || destino.isBlank()){
+             return "No es posible copiar un archivo sin ruta de origen o destino";
+         }else{
+             if (pwd().equals(origen)){
+                 Carpeta directorioAMover = directorioActual;
+             }
+         }
+         return "";
+     };
+      
+      public String cat(String nombreArchivo){
+          if (nombreArchivo.isBlank()){
+              return "El nombre del archivo ingresado es incorrecto";
+          }else{
+              String contenido = "";
+              for (Archivo arch: directorioActual.archivos){
+                  if (arch.nombreArch.equals(nombreArchivo)){
+                      for (String line: arch.linea){
+                          contenido = contenido.concat(" ").concat(line);
+                      }
+                  }
+              }
+              if (contenido.isBlank()){
+                  return "El archivo no se encontro";
+              }else{
+                  return contenido;
+              }
+          }
+      }
+      
+       public String rm(String nombreArchivo){
+          if (nombreArchivo.isBlank()){
+              return "El nombre del archivo ingresado es incorrecto";
+          }else{
+              Boolean removed = false;
+              for (Archivo arch: directorioActual.archivos){
+                  if (arch.nombreArch.equals(nombreArchivo)){
+                     directorioActual.archivos.remove(arch);
+                     removed = true;
+                  }
+              }
+              if (removed){
+                  return "El archivo se elimino con exito";
+              }else{
+                  return "El archivo no pudo ser borrado, chequee que el mismo exista bajo la ruta";
+              }
+          }
+      }
 }

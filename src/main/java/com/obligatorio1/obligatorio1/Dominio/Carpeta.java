@@ -18,5 +18,10 @@ public class Carpeta {
     }
     
     public void borrarCarpeta(String nombDir){
+        for (Carpeta directorio: carpetas){
+            if (directorio.nombreDirecto.equals(nombDir)){
+                carpetas.remove(directorio);
+            }
+        } 
     }
 }
