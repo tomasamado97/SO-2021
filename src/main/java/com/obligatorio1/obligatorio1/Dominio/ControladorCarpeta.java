@@ -15,7 +15,7 @@ public class ControladorCarpeta {
         String ruta = "/";
         for (Carpeta carpeta : carpetasRuta){
             ruta = ruta + "/" + carpeta.nombreDirecto;
-        };
+        }
         return ruta;
     }
     
@@ -35,7 +35,7 @@ public class ControladorCarpeta {
             return "No se puede borrar la carpeta inicial.";
         }else{
             ArrayList<Carpeta> directoriosExistentes = directorioActual.carpetas;
-            for (Carpeta directorio: directoriosExistentes){
+            for(Carpeta directorio: directoriosExistentes){
                 if (directorio.nombreDirecto.equals(nombreDir)){
                     directorio.borrarCarpeta(directorio.nombreDirecto);
                 }
@@ -79,7 +79,7 @@ public class ControladorCarpeta {
      }
      
      public String mv(String origen, String destino){
-         if (origen.isBlank() || destino.isBlank()){
+         if (origen.isEmpty() || destino.isEmpty()){
              return "No es posible mover un archivo sin ruta de origen o destino";
          }else{
              if (pwd().equals(origen)){
@@ -90,7 +90,7 @@ public class ControladorCarpeta {
      };
      
       public String cp(String origen, String destino){
-         if (origen.isBlank() || destino.isBlank()){
+         if (origen.isEmpty() || destino.isEmpty()){
              return "No es posible copiar un archivo sin ruta de origen o destino";
          }else{
              if (pwd().equals(origen)){
@@ -101,7 +101,7 @@ public class ControladorCarpeta {
      };
       
       public String cat(String nombreArchivo){
-          if (nombreArchivo.isBlank()){
+          if (nombreArchivo.isEmpty()){
               return "El nombre del archivo ingresado es incorrecto";
           }else{
               String contenido = "";
@@ -112,7 +112,7 @@ public class ControladorCarpeta {
                       }
                   }
               }
-              if (contenido.isBlank()){
+              if (contenido.isEmpty()){
                   return "El archivo no se encontro o no tiene contenido";
               }else{
                   return contenido;
@@ -121,7 +121,7 @@ public class ControladorCarpeta {
       }
       
        public String rm(String nombreArchivo){
-          if (nombreArchivo.isBlank()){
+          if (nombreArchivo.isEmpty()){
               return "El nombre del archivo ingresado es incorrecto";
           }else{
               Boolean removed = false;
