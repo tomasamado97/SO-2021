@@ -113,7 +113,7 @@ public class ControladorCarpeta {
                   }
               }
               if (contenido.isBlank()){
-                  return "El archivo no se encontro";
+                  return "El archivo no se encontro o no tiene contenido";
               }else{
                   return contenido;
               }
@@ -138,4 +138,8 @@ public class ControladorCarpeta {
               }
           }
       }
+       
+       public void cd(String ruta){
+           
+       }
 }
