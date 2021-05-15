@@ -16,4 +16,7 @@ public class Carpeta {
     public Carpeta(String nombreDirectorio){
         nombreDirecto = nombreDirectorio;
     }
+    
+    public void borrarCarpeta(String nombDir){
+    }
 }
