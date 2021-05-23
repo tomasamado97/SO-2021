@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.obligatorio1.obligatorio1.Dominio;
 
 import java.util.ArrayList;
@@ -12,9 +7,11 @@ public class Carpeta {
     public Permiso permiso;
     public ArrayList<Carpeta> carpetas;
     public ArrayList<Archivo> archivos;
+    public Carpeta carpetaPadre;
     
-    public Carpeta(String nombreDirectorio){
+    public Carpeta(String nombreDirectorio, Carpeta cPadre){
         nombreDirecto = nombreDirectorio;
+        carpetaPadre = cPadre;
     }
     
     public void borrarCarpeta(String nombDir){

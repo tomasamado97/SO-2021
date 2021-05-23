@@ -1,5 +1,6 @@
 package com.obligatorio1.obligatorio1.Dominio;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class ControladorUsuario {
     public ArrayList<Usuario> usuarios;
@@ -29,10 +30,13 @@ public class ControladorUsuario {
         }
     }
     
-    public String su(String nombreUser, String password){
+    public String su(String nombreUser){
         if (nombreUser.isEmpty()){
             return "El nombre del usuario no puede ser vacio.";
         }else{
+            Scanner in = new Scanner(System.in);
+            System.out.println("Ingrese la contraseña");
+            String password = in.nextLine();
             boolean isAuthenticated = false;
             Usuario userToAuth = null;
             for (Usuario user: usuarios){
@@ -51,28 +55,34 @@ public class ControladorUsuario {
         }
     }
     
-       public String passwd(String password1, String password2){ //si no funciona: crear un nuevo usuario(mismo nombre dif passwrd) y reemplazamos con set.
-            if (password1.isEmpty() || password2.isEmpty()){
-                return "No se puede crear una contraseña ";
-            } else {
-                if (password1.equals(password2)){
-                    Usuario aCambiar = null;
-                    for (Usuario user : usuarios){
-                       if (user.nombreUsuario.equals(usuarioActual.nombreUsuario) && user.password.equals(usuarioActual.password)) {
+       public String passwd(String nombreUser){
+           System.out.println("Ingrese la contraseña");
+           Scanner in = new Scanner(System.in);
+           String password1 = in.nextLine();
+           System.out.println("Ingrese la contraseña nuevamente");
+           String password2 = in.nextLine();
+           if (password1.isEmpty() || password2.isEmpty()){
+               return "No se puede crear una contraseña";
+           }else {
+               if (password1.equals(password2)){
+                   Usuario aCambiar = null;
+                   for (Usuario user: usuarios){
+                       if (user.nombreUsuario.equals(nombreUser)){
                            aCambiar = user;
-                           user.setPassword(password1);
                        }
-                    }
-                    aCambiar.setPassword(password1);
-                    return "Se cambió la contraseña con éxito";
-                } else {
-                    return "Las contraseñas no coinciden";
-                }
-            }
+                   }
+                   if (aCambiar != null){
+                       aCambiar.setPassword(password1);
+                   }
+                   return "Se cambio la contraseña correctamente";
+               }else{
+                   return "Las contraseñas no coinciden";
+               }
+           }
        }
        
-       public String whoami(String nombreUser){
-        return nombreUser;
+       public String whoami(){
+        return usuarioActual.nombreUsuario;
     }
    
 }

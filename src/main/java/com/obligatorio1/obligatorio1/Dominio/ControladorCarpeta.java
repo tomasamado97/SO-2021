@@ -1,5 +1,6 @@
 package com.obligatorio1.obligatorio1.Dominio;
 
+import com.sun.tools.javac.util.ArrayUtils;
 import java.util.ArrayList;
 
 public class ControladorCarpeta {
@@ -26,7 +27,8 @@ public class ControladorCarpeta {
                 return "Ya existe un directorio con ese nombre";
             }
         }
-        Carpeta nuevoDir = new Carpeta(nombreDir);
+        Carpeta nuevoDir = new Carpeta(nombreDir, directorioActual);
+        directorioActual.carpetas.add(nuevoDir);
         return "Se creo" + nuevoDir.nombreDirecto + "en " + directorioActual.nombreDirecto;
     }
     
@@ -78,13 +80,58 @@ public class ControladorCarpeta {
         }
      }
      
+     public Carpeta findDirectory(String ruta, Carpeta carpPadre){
+         for (Carpeta nodo: carpPadre.carpetas){
+             if (nodo.nombreDirecto.equals(ruta)){
+                 return nodo;
+             }
+         }
+         return null;
+     }
+     
      public String mv(String origen, String destino){
          if (origen.isEmpty() || destino.isEmpty()){
              return "No es posible mover un archivo sin ruta de origen o destino";
          }else{
-             if (pwd().equals(origen)){
-                 Carpeta directorioAMover = directorioActual;
-             }
+               Carpeta carpOrigen = null;
+               Carpeta aux = null;
+               String[] rutasOrigen = origen.split("/");
+               String[] rutasDestino = destino.split("/");
+               Boolean esRutaInicial = false;
+               if (carpetasRuta.get(0).nombreDirecto.equals(rutasOrigen[0])){
+                   carpOrigen = carpetasRuta.get(0);
+                   esRutaInicial = true;
+               }else{
+                   carpOrigen = directorioActual;
+               }
+               for (String ruta: rutasOrigen){
+                   if (!esRutaInicial){
+                        aux = carpOrigen;
+                        carpOrigen = findDirectory(ruta, carpOrigen);
+                   }
+                   esRutaInicial = false;
+                   if (carpOrigen == null){
+                       return "La ruta de origen especificada no es correcta";
+                   }
+               }
+               if (carpOrigen == null){
+                   Boolean esArchivo = false;
+                   Archivo archv = null;
+                   for (Archivo arch: aux.archivos){
+                       if (rutasOrigen[rutasOrigen.length -1].equals(arch.nombreArch)){
+                           esArchivo = true;
+                           archv = arch;
+                       }
+                   }
+                   if (esArchivo){
+                       
+                   }else{
+                       return "La ruta de origen no existe o es incorrecta";
+                   }
+               }else{
+                   
+               }
+              
          }
          return "";
      };
