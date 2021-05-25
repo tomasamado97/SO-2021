@@ -1,35 +1,38 @@
 package com.obligatorio1.obligatorio1.Dominio;
-
-import com.sun.tools.javac.util.ArrayUtils;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class ControladorCarpeta {
     public ArrayList<Carpeta> carpetasRuta;
     public Carpeta directorioActual;
     
       public ControladorCarpeta(){
-         carpetasRuta = null;
-         directorioActual = null;
+         carpetasRuta = new ArrayList<Carpeta>();
+         directorioActual =  null;
      }
     
     public String pwd(){
         String ruta = "/";
         for (Carpeta carpeta : carpetasRuta){
-            ruta = ruta + "/" + carpeta.nombreDirecto;
+            ruta = ruta + "/" + carpeta.nombreDirectorio;
         }
         return ruta;
     }
     
-    public String mkdir(String nombreDir){
+    public String mkdir(String nombreDir, Usuario usuarioActual){
         ArrayList<Carpeta> directoriosExistentes = directorioActual.carpetas;
         for (Carpeta directorio: directoriosExistentes){
-            if (directorio.nombreDirecto.equals(nombreDir)){
+            if (directorio.nombreDirectorio.equals(nombreDir)){
                 return "Ya existe un directorio con ese nombre";
             }
         }
-        Carpeta nuevoDir = new Carpeta(nombreDir, directorioActual);
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-DD HH:mm:ss");  
+        String fechaHora = now.format(format);
+        Carpeta nuevoDir = new Carpeta(nombreDir, 7, 7, 5, directorioActual, usuarioActual, fechaHora);
         directorioActual.carpetas.add(nuevoDir);
-        return "Se creo" + nuevoDir.nombreDirecto + "en " + directorioActual.nombreDirecto;
+        return "Se creo" + nuevoDir.nombreDirectorio + "en " + directorioActual.nombreDirectorio;
     }
     
     public String rmdir(String nombreDir){
@@ -38,8 +41,8 @@ public class ControladorCarpeta {
         }else{
             ArrayList<Carpeta> directoriosExistentes = directorioActual.carpetas;
             for(Carpeta directorio: directoriosExistentes){
-                if (directorio.nombreDirecto.equals(nombreDir)){
-                    directorio.borrarCarpeta(directorio.nombreDirecto);
+                if (directorio.nombreDirectorio.equals(nombreDir)){
+                    directorio.borrarCarpeta(directorio.nombreDirectorio);
                 }
             }
             return "Se borro el directorio";
@@ -82,69 +85,203 @@ public class ControladorCarpeta {
      
      public Carpeta findDirectory(String ruta, Carpeta carpPadre){
          for (Carpeta nodo: carpPadre.carpetas){
-             if (nodo.nombreDirecto.equals(ruta)){
+             if (nodo.nombreDirectorio.equals(ruta)){
                  return nodo;
              }
          }
          return null;
      }
      
-     public String mv(String origen, String destino){
+      public String mv(String origen, String destino){
          if (origen.isEmpty() || destino.isEmpty()){
              return "No es posible mover un archivo sin ruta de origen o destino";
          }else{
                Carpeta carpOrigen = null;
                Carpeta aux = null;
+               Carpeta carpDestino = null;
+               Carpeta aux2 = null;
                String[] rutasOrigen = origen.split("/");
                String[] rutasDestino = destino.split("/");
-               Boolean esRutaInicial = false;
-               if (carpetasRuta.get(0).nombreDirecto.equals(rutasOrigen[0])){
+               Boolean esRutaInicialDestino = false;
+               Boolean esRutaInicialOrigen = false;
+                
+               // Encuentra la carpeta/archivo de Destino
+               if (carpetasRuta.get(0).nombreDirectorio.equals(rutasDestino[0])){
+                   carpDestino = carpetasRuta.get(0);
+                   esRutaInicialDestino = true;
+               }else{
+                   carpDestino = directorioActual;
+               }
+               for (String ruta: rutasDestino){
+                   if (!esRutaInicialDestino){
+                        aux2 = carpDestino;
+                        carpDestino = findDirectory(ruta, carpDestino);
+                   }
+                   esRutaInicialDestino = false;
+                   if (carpDestino == null){
+                       return "La ruta de destino especificada no es correcta";
+                   }
+               }
+               
+               
+               // Encuentra la carpeta/archivo de Origen
+               if (carpetasRuta.get(0).nombreDirectorio.equals(rutasOrigen[0])){
                    carpOrigen = carpetasRuta.get(0);
-                   esRutaInicial = true;
+                   esRutaInicialOrigen = true;
                }else{
                    carpOrigen = directorioActual;
                }
                for (String ruta: rutasOrigen){
-                   if (!esRutaInicial){
+                   if (!esRutaInicialOrigen){
                         aux = carpOrigen;
                         carpOrigen = findDirectory(ruta, carpOrigen);
                    }
-                   esRutaInicial = false;
+                   esRutaInicialOrigen = false;
                    if (carpOrigen == null){
                        return "La ruta de origen especificada no es correcta";
                    }
                }
+               
+               // Chequea que sea carpeta o archivo y que existan
                if (carpOrigen == null){
-                   Boolean esArchivo = false;
-                   Archivo archv = null;
+                   Boolean esArchivoDestino = false;
+                   Boolean esArchivoOrigen = false;
+                   Archivo archvOrigen = null;
+                   Archivo archvDestino = null;
                    for (Archivo arch: aux.archivos){
                        if (rutasOrigen[rutasOrigen.length -1].equals(arch.nombreArch)){
-                           esArchivo = true;
-                           archv = arch;
+                           esArchivoOrigen = true;
+                           archvOrigen = arch;
                        }
                    }
-                   if (esArchivo){
-                       
+                   for (Archivo arch: aux2.archivos){
+                       if (rutasDestino[rutasDestino.length -1].equals(arch.nombreArch)){
+                           esArchivoDestino = true;
+                           archvDestino = arch;
+                       }
+                   }
+                   if (esArchivoOrigen){
+                       if (esArchivoDestino){
+                           // ya existe un archivo con ese nombre en el destino
+                           return "No se puede renombrar el archivo de origen debido a que en la ruta de destino ya existe un archivo con ese nombre";
+                       }else{
+                           if (carpDestino != null){
+                               // muevo el archivo de origen a destino
+                               carpDestino.archivos.add(archvOrigen);
+                               aux.archivos.remove(archvOrigen);
+                               return "Se movio el archivo de origen a destino";
+                           }else{
+                               archvOrigen.nombreArch = destino;
+                               return "Se renombro el archivo de origen por " + destino;
+                           }
+                       }
                    }else{
                        return "La ruta de origen no existe o es incorrecta";
                    }
                }else{
-                   
+                   if (carpDestino != null){
+                       // agrego la carpeta al destino
+                       carpDestino.carpetas.add(carpOrigen);
+                       // Borro la carpeta del origen
+                       carpOrigen.carpetaPadre.carpetas.remove(carpOrigen);
+                       return "Se movio la carpeta de origen a destino";
+                   }else{
+                       // renombramos la carpeta origen por el nombre de destino
+                       carpOrigen.nombreDirectorio = destino;
+                       return "Se renombro la ruta de origen por " + destino;
+                   }
                }
-              
          }
-         return "";
      };
-     
-      public String cp(String origen, String destino){
+      
+       public String cp(String origen, String destino){
          if (origen.isEmpty() || destino.isEmpty()){
-             return "No es posible copiar un archivo sin ruta de origen o destino";
+             return "No es posible mover un archivo sin ruta de origen o destino";
          }else{
-             if (pwd().equals(origen)){
-                 Carpeta directorioAMover = directorioActual;
-             }
+               Carpeta carpOrigen = null;
+               Carpeta aux = null;
+               Carpeta carpDestino = null;
+               Carpeta aux2 = null;
+               String[] rutasOrigen = origen.split("/");
+               String[] rutasDestino = destino.split("/");
+               Boolean esRutaInicialDestino = false;
+               Boolean esRutaInicialOrigen = false;
+                
+               // Encuentra la carpeta/archivo de Destino
+               if (carpetasRuta.get(0).nombreDirectorio.equals(rutasDestino[0])){
+                   carpDestino = carpetasRuta.get(0);
+                   esRutaInicialDestino = true;
+               }else{
+                   carpDestino = directorioActual;
+               }
+               for (String ruta: rutasDestino){
+                   if (!esRutaInicialDestino){
+                        aux2 = carpDestino;
+                        carpDestino = findDirectory(ruta, carpDestino);
+                   }
+                   esRutaInicialDestino = false;
+               }
+               
+               
+               // Encuentra la carpeta/archivo de Origen
+               if (carpetasRuta.get(0).nombreDirectorio.equals(rutasOrigen[0])){
+                   carpOrigen = carpetasRuta.get(0);
+                   esRutaInicialOrigen = true;
+               }else{
+                   carpOrigen = directorioActual;
+               }
+               for (String ruta: rutasOrigen){
+                   if (!esRutaInicialOrigen){
+                        aux = carpOrigen;
+                        carpOrigen = findDirectory(ruta, carpOrigen);
+                   }
+                   esRutaInicialOrigen = false;
+               }
+               
+               // Chequea que sea carpeta o archivo y que existan
+               if (carpOrigen == null){
+                   Boolean esArchivoDestino = false;
+                   Boolean esArchivoOrigen = false;
+                   Archivo archvOrigen = null;
+                   Archivo archvDestino = null;
+                   for (Archivo arch: aux.archivos){
+                       if (rutasOrigen[rutasOrigen.length -1].equals(arch.nombreArch)){
+                           esArchivoOrigen = true;
+                           archvOrigen = arch;
+                       }
+                   }
+                   for (Archivo arch: aux2.archivos){
+                       if (rutasDestino[rutasDestino.length -1].equals(arch.nombreArch)){
+                           esArchivoDestino = true;
+                           archvDestino = arch;
+                       }
+                   }
+                   if (esArchivoOrigen){
+                       if (esArchivoDestino){
+                           // ya existe un archivo con ese nombre en el destino
+                           return "No se puede renombrar el archivo de origen debido a que en la ruta de destino ya existe un archivo con ese nombre";
+                       }else{
+                           if (carpDestino != null){
+                               // muevo el archivo de origen a destino
+                               carpDestino.archivos.add(archvOrigen);
+                               return "Se copio el archivo de origen a destino";
+                           }else{
+                               return "La ruta de destino no es correcta";
+                           }
+                       }
+                   }else{
+                       return "La ruta de origen no existe o es incorrecta";
+                   }
+               }else{
+                   if (carpDestino != null){
+                       // agrego la carpeta al destino
+                       carpDestino.carpetas.add(carpOrigen);
+                       return "Se copio la carpeta de origen a destino";
+                   }else{
+                       return "La ruta de destino no es correcta";
+                   }
+               }
          }
-         return "";
      };
       
       public String cat(String nombreArchivo){
@@ -186,7 +323,45 @@ public class ControladorCarpeta {
           }
       }
        
-       public void cd(String ruta){
-           
+       public String cd(String ruta){
+            if (ruta.isEmpty()){
+                return "La ruta especificada es incorrecta";
+            }else{
+                  Carpeta aux = null;
+                  ArrayList<Carpeta> nuevaRuta = new ArrayList<Carpeta>();
+                  Carpeta carpDestino = null;
+                  String[] rutasDestino = ruta.split("/");
+                  Boolean esRutaInicialDestino = false;
+
+                  // Encuentra la carpeta/archivo de Destino
+                  if (carpetasRuta.get(0).nombreDirectorio.equals(rutasDestino[0])){
+                      carpDestino = carpetasRuta.get(0);
+                      nuevaRuta.add(carpDestino);
+                      esRutaInicialDestino = true;
+                  }else{
+                      carpDestino = directorioActual;
+                  }
+                  for (String r: rutasDestino){
+                      if (!esRutaInicialDestino){
+                           aux = carpDestino;
+                           carpDestino = findDirectory(r, carpDestino);
+                           if (carpDestino != null){
+                               nuevaRuta.add(carpDestino);
+                           }
+                      }
+                      esRutaInicialDestino = false;
+                  }
+                  if (carpDestino == null){
+                      return "La ruta es incorrecta";
+                  }else{
+                      carpetasRuta = nuevaRuta;
+                      directorioActual = carpDestino;
+                      return pwd();
+                  }
+          }
        }
-}
+       
+       public String ls(){
+           return "";
+       };
+};
