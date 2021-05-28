@@ -61,8 +61,6 @@ public class Carpeta {
         this.dueño = dueño;
     }
 
-    
-    
     public String getFechaHora() {
         return fechaHora;
     }
@@ -71,13 +69,12 @@ public class Carpeta {
         this.fechaHora = fechaHora;
     }
 
-    public Carpeta(String nombreDirectorio, int permisoDueño, int permisoGrupo, int permisoResto, Carpeta carpetaPadre, Usuario dueño, String fechaHora) {
+    public Carpeta(String nombreDirectorio, int permisoDueño, int permisoGrupo, int permisoResto, Carpeta carpetaPadre, String fechaHora) {
         this.nombreDirectorio = nombreDirectorio;
         this.permiso = new Permiso(permisoDueño,permisoGrupo,permisoResto);
         this.carpetas = null;
         this.archivos = null;
         this.carpetaPadre = carpetaPadre;
-        this.dueño = dueño;
         this.fechaHora = fechaHora;
     }
 

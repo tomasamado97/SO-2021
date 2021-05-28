@@ -9,73 +9,104 @@ public class ControladorCarpeta {
     
       public ControladorCarpeta(){
          carpetasRuta = new ArrayList<Carpeta>();
-         directorioActual =  null;
+         LocalDateTime now = LocalDateTime.now();
+         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-DD HH:mm:ss");  
+            String fechaHora = now.format(format);
+         directorioActual =  new Carpeta("Inicio", 7, 7, 7, null, fechaHora);
+         carpetasRuta.add(directorioActual);
      }
     
     public String pwd(){
         String ruta = "/";
         for (Carpeta carpeta : carpetasRuta){
-            ruta = ruta + "/" + carpeta.nombreDirectorio;
+            ruta = ruta + carpeta.nombreDirectorio + "/";
         }
         return ruta;
     }
     
     public String mkdir(String nombreDir, Usuario usuarioActual){
-        ArrayList<Carpeta> directoriosExistentes = directorioActual.carpetas;
-        for (Carpeta directorio: directoriosExistentes){
-            if (directorio.nombreDirectorio.equals(nombreDir)){
-                return "Ya existe un directorio con ese nombre";
+        if (directorioActual.carpetas != null){
+            for (Carpeta directorio: directorioActual.carpetas){
+                if (directorio.nombreDirectorio.equals(nombreDir)){
+                    return "Ya existe un directorio con ese nombre";
+                }
             }
+            if ((usuarioActual.nombreUsuario.equals(directorioActual.dueño.nombreUsuario) && directorioActual.permiso.permisoDueño != 7) || (directorioActual.permiso.permisoResto != 7)) {
+                return "No se tiene permiso para realizar esta acción";
+            }
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-DD HH:mm:ss");  
+            String fechaHora = now.format(format);
+            Carpeta nuevoDir = new Carpeta(nombreDir, 7, 7, 5, directorioActual, fechaHora);
+            nuevoDir.setDueño(usuarioActual);
+            directorioActual.carpetas.add(nuevoDir);
+            return "Se creo" + nuevoDir.nombreDirectorio + "en " + directorioActual.nombreDirectorio;
         }
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-DD HH:mm:ss");  
-        String fechaHora = now.format(format);
-        Carpeta nuevoDir = new Carpeta(nombreDir, 7, 7, 5, directorioActual, usuarioActual, fechaHora);
-        directorioActual.carpetas.add(nuevoDir);
-        return "Se creo" + nuevoDir.nombreDirectorio + "en " + directorioActual.nombreDirectorio;
+        return "No se pudo crear el directorio";
     }
     
-    public String rmdir(String nombreDir){
+    public String rmdir(String nombreDir, Usuario usuarioActual){
         if (nombreDir.equals("/")){
             return "No se puede borrar la carpeta inicial.";
         }else{
-            ArrayList<Carpeta> directoriosExistentes = directorioActual.carpetas;
-            for(Carpeta directorio: directoriosExistentes){
-                if (directorio.nombreDirectorio.equals(nombreDir)){
-                    directorio.borrarCarpeta(directorio.nombreDirectorio);
+            if (directorioActual.carpetas != null){
+                for(Carpeta directorio: directorioActual.carpetas){
+                    if (directorio.nombreDirectorio.equals(nombreDir)){
+                        if ((usuarioActual.nombreUsuario.equals(directorioActual.dueño.nombreUsuario) && directorioActual.permiso.permisoDueño != 7) || (directorioActual.permiso.permisoResto != 7)) {
+                            return "No se tiene permiso para realizar esta acción";
+                        }
+                        directorio.borrarCarpeta(directorio.nombreDirectorio);
+                    }
                 }
+                return "Se borro el directorio";
             }
-            return "Se borro el directorio";
+            return "No se pudo borrar el directorio";
         }
     }
     
-     public String touch(String nombreArchivo) {
+     public String touch(String nombreArchivo, Usuario usuarioActual) {
        
         if(nombreArchivo.isEmpty()){
             return "No se puede crear un archivo sin nombre";
         }else {
             boolean archivoRepetido = false;
-            for(Archivo arch: directorioActual.archivos){
-                if (arch.nombreArch.equals(nombreArchivo)){
-                    archivoRepetido = true;
+            if ( directorioActual.archivos != null){
+                for(Archivo arch: directorioActual.archivos){
+                    if (arch.nombreArch.equals(nombreArchivo)){
+                        archivoRepetido = true;
+                    }
+                }
+                if (archivoRepetido) {
+                    return "Ya existe un archivo con este nombre, utilice otro.";
+                } else {
+                    if ((usuarioActual.nombreUsuario.equals(directorioActual.dueño.nombreUsuario) && directorioActual.permiso.permisoDueño != 7) || (directorioActual.permiso.permisoResto != 7)) {
+                        return "No se tiene permiso para realizar esta acción";
+                    }
+                    Archivo nuevoArchivo = new Archivo();
+                    directorioActual.archivos.add(nuevoArchivo);
+                    return "El archivo se agregó con exito";
                 }
             }
-            if (archivoRepetido) {
-                return "Ya existe un archivo con este nombre, utilice otro.";
-            } else {
-                Archivo nuevoArchivo = new Archivo();
-                directorioActual.archivos.add(nuevoArchivo);
-                return "El archivo se agregó con exito";
-            }
+            return "No se pudo crear el archivo";
         }
     }
     
-     public String echo(String texto, String nombreArchivo){
+     public String echo(String texto, String nombreArchivo, Usuario usuarioActual){
         if(nombreArchivo.isEmpty()){
             return "No se puede agregar el texto un archivo sin nombre";
         }else {
             for(Archivo arch: directorioActual.archivos){
                 if (arch.nombreArch.equals(nombreArchivo)){
+                    if ((usuarioActual.nombreUsuario.equals(directorioActual.dueño.nombreUsuario)
+                            && directorioActual.permiso.permisoDueño != 2
+                            || directorioActual.permiso.permisoDueño != 3
+                            || directorioActual.permiso.permisoDueño != 6
+                            || directorioActual.permiso.permisoDueño != 7) || (directorioActual.permiso.permisoResto != 2
+                            || directorioActual.permiso.permisoResto != 3
+                            || directorioActual.permiso.permisoResto != 6
+                            || directorioActual.permiso.permisoResto != 7)) {
+                        return "No se tiene permiso para realizar esta acción";
+                    }
                     arch.linea.add(texto);
                 }
             }
@@ -284,41 +315,57 @@ public class ControladorCarpeta {
          }
      };
       
-      public String cat(String nombreArchivo){
+      public String cat(String nombreArchivo, Usuario usuarioActual){
           if (nombreArchivo.isEmpty()){
               return "El nombre del archivo ingresado es incorrecto";
           }else{
               String contenido = "";
-              for (Archivo arch: directorioActual.archivos){
-                  if (arch.nombreArch.equals(nombreArchivo)){
-                      for (String line: arch.linea){
-                          contenido = contenido.concat(" ").concat(line);
-                      }
-                  }
-              }
-              if (contenido.isEmpty()){
-                  return "El archivo no se encontro o no tiene contenido";
+              if (directorioActual.archivos != null){
+                for (Archivo arch: directorioActual.archivos){
+                    if (arch.nombreArch.equals(nombreArchivo)){
+                        for (String line: arch.linea){
+                            contenido = contenido.concat(" ").concat(line);
+                        }
+                    }
+                }
+                if (contenido.isEmpty()){
+                    return "El archivo no se encontro o no tiene contenido";
+                }else{
+                    if ((usuarioActual.nombreUsuario.equals(directorioActual.dueño.nombreUsuario)
+                        && directorioActual.permiso.permisoDueño != 4
+                        || directorioActual.permiso.permisoDueño != 5
+                        || directorioActual.permiso.permisoDueño != 6
+                        || directorioActual.permiso.permisoDueño != 7) || (directorioActual.permiso.permisoResto != 4
+                        || directorioActual.permiso.permisoResto != 5
+                        || directorioActual.permiso.permisoResto != 6
+                        || directorioActual.permiso.permisoResto != 7)) {
+                        return "No se tiene permiso para realizar esta acción";
+                    }
+                    return contenido;
+                }
               }else{
-                  return contenido;
+                return "No se pudo realizar la operacion";
               }
           }
       }
       
-       public String rm(String nombreArchivo){
+       public String rm(String nombreArchivo, Usuario usuarioActual){
           if (nombreArchivo.isEmpty()){
               return "El nombre del archivo ingresado es incorrecto";
           }else{
-              Boolean removed = false;
-              for (Archivo arch: directorioActual.archivos){
-                  if (arch.nombreArch.equals(nombreArchivo)){
-                     directorioActual.archivos.remove(arch);
-                     removed = true;
-                  }
-              }
-              if (removed){
-                  return "El archivo se elimino con exito";
+              if (directorioActual.archivos != null){
+                for (Archivo arch: directorioActual.archivos){
+                    if (arch.nombreArch.equals(nombreArchivo)){
+                        if ((usuarioActual.nombreUsuario.equals(directorioActual.dueño.nombreUsuario) && directorioActual.permiso.permisoDueño != 7) || (directorioActual.permiso.permisoResto != 7)) {
+                            return "No se tiene permiso para realizar esta acción";
+                        }
+                       directorioActual.archivos.remove(arch);
+                       return "El archivo se elimino con exito";
+                    }
+                }
+                return "El archivo no pudo ser borrado, chequee que el mismo exista bajo la ruta";
               }else{
-                  return "El archivo no pudo ser borrado, chequee que el mismo exista bajo la ruta";
+                return "No se pudo eliminar el archivo";
               }
           }
       }

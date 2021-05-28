@@ -9,8 +9,11 @@ public class ControladorUsuario {
     public Usuario usuarioActual;
 
     public ControladorUsuario() {
-        usuarios = null;
+        usuarios = new ArrayList<Usuario>();
         usuarioActual = new Usuario("visita", "1234", false);
+        usuarios.add(usuarioActual);
+        Usuario root = new Usuario("root", "root", true);
+        usuarios.add(root);
     }
 
     public String userdel(String nombreUser) {
@@ -34,29 +37,7 @@ public class ControladorUsuario {
                 Scanner in = new Scanner(System.in);
                 System.out.println("Ingrese la contraseña:");
                 String password = in.nextLine();
-                System.out.println("¿Este usuario será admin (responda sólo con si o no)?");
-                boolean esAdmin;
-                switch (in.nextLine()) {
-                    case "si":
-                        boolean existeAdmin = false;
-                        for (Usuario user : usuarios) {
-                            if (user.esAdmin == true) {
-                                existeAdmin = true;
-                            }
-                        }
-                        if (!existeAdmin) {
-                            esAdmin = true;
-                        } else {
-                            return "Ya existe un usuario admin";
-                        }
-                        break;
-                    case "no":
-                        esAdmin = false;
-                        break;
-                    default:
-                        return "Respuesta no válida";
-                }
-                Usuario nuevoUser = new Usuario(nombreUser, password, esAdmin);
+                Usuario nuevoUser = new Usuario(nombreUser, password, false);
                 usuarios.add(nuevoUser);
                 return "El usuario se agrego con exito";
             }
@@ -73,19 +54,17 @@ public class ControladorUsuario {
             System.out.println("Ingrese la contraseña");
             String password = in.nextLine();
             boolean isAuthenticated = false;
-            Usuario userToAuth = null;
             for (Usuario user : usuarios) {
-                if (user.nombreUsuario.equals(nombreUser) & user.password.equals(password)) {
+                if (user.nombreUsuario.equals(nombreUser)) {
                     isAuthenticated = true;
-                    userToAuth = user;
+                    if (user.password.equals(password)){
+                        return "Te has autenticado con exito";
+                    }else{
+                        return "El username y la password no son correctos";
+                    }
                 }
             }
-            if (isAuthenticated) {
-                usuarioActual = userToAuth;
-                return "Te has autenticado con exito";
-            } else {
-                return "El username y la password no son correctos";
-            }
+            return "No se encontro el usuario con nombre" + nombreUser;
         }
     }
 
@@ -122,5 +101,13 @@ public class ControladorUsuario {
     public String whoami() {
         return usuarioActual.nombreUsuario;
     }
+    
+    public String history() {
+        String history = "";
+        for (String comando : usuarioActual.comandos) {
+            history = comando + "\n";
+        }
+        return history;
+    } 
 
 }

@@ -43,7 +43,7 @@ opcion1(){
 
     #VERIFICO QUE TENGA MAS DE TRES CARACTERES.
     masdetres=true
-    if [[ ${#pass} < 4 ]]
+    if [ ${#pass} -lt 4 ]
     then
       echo "La contrasena es demasiado corta."
       masdetres=false

@@ -1,9 +1,12 @@
 package com.obligatorio1.obligatorio1.Dominio;
 
+import java.util.ArrayList;
+
 public class Usuario {
     public String nombreUsuario;
     public String password;
     public boolean esAdmin;
+    public ArrayList<String> comandos;
 
     public String getNombreUsuario() {
         return nombreUsuario;
@@ -29,10 +32,15 @@ public class Usuario {
         this.esAdmin = esAdmin;
     }
 
+    public void agregarComando(String comando) {
+        this.comandos.add(comando);
+    }
+    
     public Usuario (String unNombreUsuario, String unaPassword, boolean unEsAdmin) {
         this.setNombreUsuario(unNombreUsuario);
         this.setPassword(unaPassword);
         this.setEsAdmin(unEsAdmin);
+        this.comandos = new ArrayList<String>();
     }
     
     
