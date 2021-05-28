@@ -58,6 +58,7 @@ public class ControladorUsuario {
                 if (user.nombreUsuario.equals(nombreUser)) {
                     isAuthenticated = true;
                     if (user.password.equals(password)){
+                        usuarioActual = user;
                         return "Te has autenticado con exito";
                     }else{
                         return "El username y la password no son correctos";

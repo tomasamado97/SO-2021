@@ -8,7 +8,6 @@ public class main {
     public static void main(String[] args) {
         ControladorUsuario CU = new ControladorUsuario();
         ControladorCarpeta CA = new ControladorCarpeta();
-        ControladorComandos CC = new ControladorComandos();
         System.out.println("Para salir, escriba el comando 'exit'");
         boolean exit = false;
         while (!exit) {
