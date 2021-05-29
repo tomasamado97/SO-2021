@@ -1,8 +1,6 @@
 package com.obligatorio1.obligatorio1.Dominio;
 
 import java.util.ArrayList;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class ControladorCarpeta {
 
@@ -10,10 +8,7 @@ public class ControladorCarpeta {
     public Carpeta directorioActual;
 
      public ControladorCarpeta(Usuario root){
-         carpetasRuta = new ArrayList<Carpeta>();
-         LocalDateTime now = LocalDateTime.now();
-         DateTimeFormatter format = DateTimeFormatter.ofPattern("uuuu/M/d h:m:s");  
-         String fechaHora = now.format(format);
+         carpetasRuta = new ArrayList<>();
          directorioActual =  new Carpeta("Inicio", 7, 7, 7, null);
          carpetasRuta.add(directorioActual);
          directorioActual.setDueño(root);
@@ -112,6 +107,35 @@ public class ControladorCarpeta {
             return "Se agrego el texto al archivo";
         }
     }
+    
+    public boolean permisoLectura(Permiso permiso, Usuario usuarioActual) {
+        return ((usuarioActual.nombreUsuario.equals(directorioActual.dueño.nombreUsuario)
+                && (directorioActual.permiso.permisoDueño == 4
+                || directorioActual.permiso.permisoDueño == 5
+                || directorioActual.permiso.permisoDueño == 6
+                || directorioActual.permiso.permisoDueño == 7)) || (directorioActual.permiso.permisoResto == 4
+                || directorioActual.permiso.permisoResto == 5
+                || directorioActual.permiso.permisoResto == 6
+                || directorioActual.permiso.permisoResto == 7));
+            
+    }
+
+ 
+
+    public boolean permisoEscritura(Permiso permiso, Usuario usuarioActual) {
+        return ((usuarioActual.nombreUsuario.equals(directorioActual.dueño.nombreUsuario)
+                && directorioActual.permiso.permisoDueño == 2
+                || directorioActual.permiso.permisoDueño == 3
+                || directorioActual.permiso.permisoDueño == 6
+                || directorioActual.permiso.permisoDueño == 7) || (directorioActual.permiso.permisoResto == 2
+                || directorioActual.permiso.permisoResto == 3
+                || directorioActual.permiso.permisoResto == 6
+                || directorioActual.permiso.permisoResto == 7));
+    }
+    
+    public boolean permisoTotal(Permiso permiso, Usuario usuarioActual) {
+        return ((usuarioActual.nombreUsuario.equals(directorioActual.dueño.nombreUsuario) && directorioActual.permiso.permisoDueño == 7) || (directorioActual.permiso.permisoResto == 7));
+    }
 
     public Carpeta findDirectory(String ruta, Carpeta carpPadre) {
         if (carpPadre.carpetas != null){
@@ -133,14 +157,15 @@ public class ControladorCarpeta {
             Carpeta aux = null;
             Carpeta carpDestino = null;
             Carpeta aux2 = null;
-            String[] rutasOrigen = origen.split("/");
-            String[] rutasDestino = destino.split("/");
+            String[] rutasOrigen = origen.substring(1).split("/");
+            String[] rutasDestino = destino.substring(1).split("/");
             Boolean esRutaInicialDestino = false;
             Boolean esRutaInicialOrigen = false;
 
             // Encuentra la carpeta/archivo de Destino
             if (carpetasRuta.get(0).nombreDirectorio.equals(rutasDestino[0])) {
                 carpDestino = carpetasRuta.get(0);
+                aux2 = carpDestino;
                 esRutaInicialDestino = true;
             } else {
                 carpDestino = directorioActual;
@@ -159,6 +184,7 @@ public class ControladorCarpeta {
             // Encuentra la carpeta/archivo de Origen
             if (carpetasRuta.get(0).nombreDirectorio.equals(rutasOrigen[0])) {
                 carpOrigen = carpetasRuta.get(0);
+                 aux = carpOrigen;
                 esRutaInicialOrigen = true;
             } else {
                 carpOrigen = directorioActual;
@@ -215,7 +241,7 @@ public class ControladorCarpeta {
                     // agrego la carpeta al destino
                     carpDestino.carpetas.add(carpOrigen);
                     // Borro la carpeta del origen
-                    carpOrigen.carpetaPadre.carpetas.remove(carpOrigen);
+                    aux.carpetas.remove(carpOrigen);
                     return "Se movio la carpeta de origen a destino";
                 } else {
                     // renombramos la carpeta origen por el nombre de destino
@@ -225,8 +251,6 @@ public class ControladorCarpeta {
             }
         }
     }
-
-    ;
       
        public String cp(String origen, String destino) {
         if (origen.isEmpty() || destino.isEmpty()) {
@@ -236,14 +260,15 @@ public class ControladorCarpeta {
             Carpeta aux = null;
             Carpeta carpDestino = null;
             Carpeta aux2 = null;
-            String[] rutasOrigen = origen.split("/");
-            String[] rutasDestino = destino.split("/");
+            String[] rutasOrigen = origen.substring(1).split("/");
+            String[] rutasDestino = destino.substring(1).split("/");
             Boolean esRutaInicialDestino = false;
             Boolean esRutaInicialOrigen = false;
 
             // Encuentra la carpeta/archivo de Destino
             if (carpetasRuta.get(0).nombreDirectorio.equals(rutasDestino[0])) {
                 carpDestino = carpetasRuta.get(0);
+                 aux2 = carpDestino;
                 esRutaInicialDestino = true;
             } else {
                 carpDestino = directorioActual;
@@ -259,6 +284,7 @@ public class ControladorCarpeta {
             // Encuentra la carpeta/archivo de Origen
             if (carpetasRuta.get(0).nombreDirectorio.equals(rutasOrigen[0])) {
                 carpOrigen = carpetasRuta.get(0);
+                 aux = carpOrigen;
                 esRutaInicialOrigen = true;
             } else {
                 carpOrigen = directorioActual;
@@ -277,16 +303,20 @@ public class ControladorCarpeta {
                 Boolean esArchivoOrigen = false;
                 Archivo archvOrigen = null;
                 Archivo archvDestino = null;
-                for (Archivo arch : aux.archivos) {
-                    if (rutasOrigen[rutasOrigen.length - 1].equals(arch.nombreArch)) {
-                        esArchivoOrigen = true;
-                        archvOrigen = arch;
+                if (aux.archivos != null){
+                    for (Archivo arch : aux.archivos) {
+                        if (rutasOrigen[rutasOrigen.length - 1].equals(arch.nombreArch)) {
+                            esArchivoOrigen = true;
+                            archvOrigen = arch;
+                        }
                     }
                 }
-                for (Archivo arch : aux2.archivos) {
-                    if (rutasDestino[rutasDestino.length - 1].equals(arch.nombreArch)) {
-                        esArchivoDestino = true;
-                        archvDestino = arch;
+                if (aux2.archivos != null){
+                    for (Archivo arch : aux2.archivos) {
+                        if (rutasDestino[rutasDestino.length - 1].equals(arch.nombreArch)) {
+                            esArchivoDestino = true;
+                            archvDestino = arch;
+                        }
                     }
                 }
                 if (esArchivoOrigen) {

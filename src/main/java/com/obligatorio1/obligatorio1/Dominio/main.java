@@ -92,10 +92,10 @@ public class main {
                     switch (comando[0])
                     {
                         case "mv":
-                            /*System.out.println(CA.mv(comando[1],comando[2]))*/;
+                            System.out.println(CA.mv(comando[1],comando[2]));
                             break;
                         case "cp":
-                            /*System.out.println(CA.cp(comando[1],comando[2]))*/;
+                            System.out.println(CA.cp(comando[1],comando[2]));
                             break;
                         case "chmod":
                             System.out.println(CA.chmod(comando[1],comando[2], CU.usuarioActual));
