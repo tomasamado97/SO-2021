@@ -73,11 +73,11 @@ public class Carpeta {
     public Carpeta(String nombreDirectorio, int permisoDueño, int permisoGrupo, int permisoResto, Carpeta carpetaPadre) {
         this.nombreDirectorio = nombreDirectorio;
         this.permiso = new Permiso(permisoDueño,permisoGrupo,permisoResto);
-        this.carpetas = null;
-        this.archivos = null;
+        this.carpetas = new ArrayList<Carpeta>();
+        this.archivos = new ArrayList<Archivo>();
         this.carpetaPadre = carpetaPadre;
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-DD HH:mm:ss");
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("uuuu/M/d h:m:s");
         String fechaHora = now.format(format);
         this.fechaHora = fechaHora;
     }

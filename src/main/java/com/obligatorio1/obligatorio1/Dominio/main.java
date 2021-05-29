@@ -7,7 +7,7 @@ public class main {
     @SuppressWarnings("empty-statement")
     public static void main(String[] args) {
         ControladorUsuario CU = new ControladorUsuario();
-        ControladorCarpeta CA = new ControladorCarpeta();
+        ControladorCarpeta CA = new ControladorCarpeta(CU.getUserByName("root"));
         System.out.println("Para salir, escriba el comando 'exit'");
         boolean exit = false;
         while (!exit) {
@@ -74,11 +74,11 @@ public class main {
                             System.out.println(CA.rm(comando[1], CU.usuarioActual));
                             break;
                         case "cd":
-                            /*System.out.println(CA.cd(comando[1]))*/;
+                            System.out.println(CA.cd(comando[1]));
                             break;
                         case "ls":
                             if (comando[1].equals("-l")) {
-                                /*System.out.println(CA.ls())*/;
+                                System.out.println(CA.ls());
                             } else {
                                 System.out.println("Comando no válido");
                             }
