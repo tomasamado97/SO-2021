@@ -104,7 +104,7 @@ public class ControladorUsuario {
     public String history() {
         String history = "";
         for (String comando : usuarioActual.comandos) {
-            history = comando + "\n";
+            history = history + comando + "\n";
         }
         return history;
     } 

@@ -81,12 +81,4 @@ public class Carpeta {
         String fechaHora = now.format(format);
         this.fechaHora = fechaHora;
     }
-
-    public void borrarCarpeta(String nombDir) {
-        for (Carpeta directorio : carpetas) {
-            if (directorio.nombreDirectorio.equals(nombDir)) {
-                carpetas.remove(directorio);
-            }
-        }
-    }
 }

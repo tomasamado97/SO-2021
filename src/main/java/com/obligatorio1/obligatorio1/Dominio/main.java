@@ -115,7 +115,7 @@ public class main {
                             System.out.println(CA.echo(comando[1], comando[3], CU.usuarioActual));
                             break;
                         case "history":
-                            /*System.out.println(CA.grepHistory(comando[3]))*/;
+                            /*System.out.println(CA.grepHistory(comando[3]));*/
                             break;
                         default:
                             System.out.println("Comando no válido");
