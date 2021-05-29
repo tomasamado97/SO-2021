@@ -1,6 +1,7 @@
 package com.obligatorio1.obligatorio1.Dominio;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class Carpeta {
@@ -69,12 +70,15 @@ public class Carpeta {
         this.fechaHora = fechaHora;
     }
 
-    public Carpeta(String nombreDirectorio, int permisoDueño, int permisoGrupo, int permisoResto, Carpeta carpetaPadre, String fechaHora) {
+    public Carpeta(String nombreDirectorio, int permisoDueño, int permisoGrupo, int permisoResto, Carpeta carpetaPadre) {
         this.nombreDirectorio = nombreDirectorio;
         this.permiso = new Permiso(permisoDueño,permisoGrupo,permisoResto);
         this.carpetas = null;
         this.archivos = null;
         this.carpetaPadre = carpetaPadre;
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-DD HH:mm:ss");
+        String fechaHora = now.format(format);
         this.fechaHora = fechaHora;
     }
 

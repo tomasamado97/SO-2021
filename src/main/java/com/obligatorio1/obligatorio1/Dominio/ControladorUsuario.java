@@ -110,5 +110,14 @@ public class ControladorUsuario {
         }
         return history;
     } 
+    
+    public String historyGrep(String palabraABuscar) {
+        for (String comando : usuarioActual.comandos) {
+            if (comando.contains(palabraABuscar)) {
+                return comando;
+            }
+        }
+        return "No se encontró la palabra en ninguno de los comandos ingresados";
+    }
 
 }

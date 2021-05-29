@@ -98,10 +98,10 @@ public class main {
                             /*System.out.println(CA.cp(comando[1],comando[2]))*/;
                             break;
                         case "chmod":
-                            /*System.out.println(CA.chmod(comando[1],comando[2]))*/;
+                            System.out.println(CA.chmod(comando[1],comando[2], CU.usuarioActual));
                             break;
                         case "chown":
-                            /*System.out.println(CA.chown(comando[1],comando[2]))*/;
+                            System.out.println(CA.chown(comando[1],comando[2], CU.usuarios, CU.usuarioActual));
                             break;
                         default:
                             System.out.println("Comando no válido");
