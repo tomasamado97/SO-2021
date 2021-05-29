@@ -7,14 +7,14 @@ public class ControladorCarpeta {
     public ArrayList<Carpeta> carpetasRuta;
     public Carpeta directorioActual;
 
-     public ControladorCarpeta(Usuario root){
-         carpetasRuta = new ArrayList<>();
-         directorioActual =  new Carpeta("Inicio", 7, 7, 7, null);
-         carpetasRuta.add(directorioActual);
-         directorioActual.setDueño(root);
-     }
-    
-    public String pwd(){
+    public ControladorCarpeta(Usuario root) {
+        carpetasRuta = new ArrayList<>();
+        directorioActual = new Carpeta("Inicio", 7, 7, 7, null);
+        carpetasRuta.add(directorioActual);
+        directorioActual.setDueño(root);
+    }
+
+    public String pwd() {
         String ruta = "/";
         for (Carpeta carpeta : carpetasRuta) {
             ruta = ruta + carpeta.nombreDirectorio + "/";
@@ -30,14 +30,14 @@ public class ControladorCarpeta {
                 }
             }
         }
-            if ((usuarioActual.nombreUsuario.equals(directorioActual.dueño.nombreUsuario) && directorioActual.permiso.permisoDueño == 7) || (directorioActual.permiso.permisoResto == 7)) {
-                Carpeta nuevoDir = new Carpeta(nombreDir, 7, 7, 5, directorioActual);
-                nuevoDir.setDueño(usuarioActual);
-                directorioActual.carpetas.add(nuevoDir);
-                return "Se creó " + nuevoDir.nombreDirectorio + " en " + directorioActual.nombreDirectorio;
-            }
-            return "No se tiene permiso para realizar esta acción";
-            
+        if (permisoTotal(directorioActual.permiso, usuarioActual)) {
+            Carpeta nuevoDir = new Carpeta(nombreDir, 7, 7, 5, directorioActual);
+            nuevoDir.setDueño(usuarioActual);
+            directorioActual.carpetas.add(nuevoDir);
+            return "Se creó " + nuevoDir.nombreDirectorio + " en " + directorioActual.nombreDirectorio;
+        }
+        return "No se tiene permiso para realizar esta acción";
+
     }
 
     public String rmdir(String nombreDir, Usuario usuarioActual) {
@@ -47,67 +47,47 @@ public class ControladorCarpeta {
             if (directorioActual.carpetas != null) {
                 for (Carpeta directorio : directorioActual.carpetas) {
                     if (directorio.nombreDirectorio.equals(nombreDir)) {
-                        if ((usuarioActual.nombreUsuario.equals(directorioActual.dueño.nombreUsuario) && directorioActual.permiso.permisoDueño == 7) || (directorioActual.permiso.permisoResto == 7)) {
+                        if (permisoTotal(directorioActual.permiso, usuarioActual)) {
                             directorioActual.carpetas.remove(directorio);
                             return "Se borro el directorio";
                         }
                     }
                 }
-                 return "No se tiene permiso para realizar esta acción";
+                return "No se tiene permiso para realizar esta acción";
             }
             return "No se pudo borrar el directorio";
         }
     }
 
     public String touch(String nombreArchivo, Usuario usuarioActual) {
-        if (nombreArchivo.isEmpty()) {
-            return "No se puede crear un archivo sin nombre";
-        } else {
-            boolean archivoRepetido = false;
-            if (directorioActual.archivos != null) {
-                for (Archivo arch : directorioActual.archivos) {
-                    if (arch.nombreArch.equals(nombreArchivo)) {
-                        archivoRepetido = true;
-                    }
-                }
-                if (archivoRepetido) {
-                    return "Ya existe un archivo con este nombre, utilice otro.";
-                } else {
-                    if ((usuarioActual.nombreUsuario.equals(directorioActual.dueño.nombreUsuario) && directorioActual.permiso.permisoDueño == 7) || (directorioActual.permiso.permisoResto == 7)) {
-                        Archivo nuevoArchivo = new Archivo(7, 7, 5, nombreArchivo, usuarioActual);
-                        directorioActual.archivos.add(nuevoArchivo);
-                        return "El archivo se agregó con exito";
-                    }
-                      return "No se tiene permiso para realizar esta acción";
+        if (directorioActual.archivos != null) {
+            for (Archivo arch : directorioActual.archivos) {
+                if (arch.nombreArch.equals(nombreArchivo)) {
+                    return "Ya existe un archivo con este nombre";
                 }
             }
-            return "No se pudo crear el archivo";
+            if (permisoTotal(directorioActual.permiso, usuarioActual)) {
+                Archivo nuevoArchivo = new Archivo(7, 7, 5, nombreArchivo, usuarioActual);
+                directorioActual.archivos.add(nuevoArchivo);
+                return "El archivo se agregó con exito";
+            }
+            return "No se tiene permiso para realizar esta acción";
         }
+        return "No se pudo crear el archivo";
     }
 
     public String echo(String texto, String nombreArchivo, Usuario usuarioActual) {
-        if (nombreArchivo.isEmpty()) {
-            return "No se puede agregar el texto un archivo sin nombre";
-        } else {
-            for (Archivo arch : directorioActual.archivos) {
-                if (arch.nombreArch.equals(nombreArchivo)) {
-                    if ((usuarioActual.nombreUsuario.equals(directorioActual.dueño.nombreUsuario)
-                            && directorioActual.permiso.permisoDueño == 2
-                            || directorioActual.permiso.permisoDueño == 3
-                            || directorioActual.permiso.permisoDueño == 6
-                            || directorioActual.permiso.permisoDueño == 7) || (directorioActual.permiso.permisoResto == 2
-                            || directorioActual.permiso.permisoResto == 3
-                            || directorioActual.permiso.permisoResto == 6
-                            || directorioActual.permiso.permisoResto == 7)) {
-                        arch.linea.add(texto);
-                    }
-                    return "No se tiene permiso para realizar esta acción";
+        for (Archivo arch : directorioActual.archivos) {
+            if (arch.nombreArch.equals(nombreArchivo)) {
+                if (permisoEscritura(directorioActual.permiso, usuarioActual)) {
+                    arch.linea.add(texto);
                 }
+                return "No se tiene permiso para realizar esta acción";
             }
-            return "Se agrego el texto al archivo";
         }
+        return "El archivo no existe";
     }
-    
+
     public boolean permisoLectura(Permiso permiso, Usuario usuarioActual) {
         return ((usuarioActual.nombreUsuario.equals(directorioActual.dueño.nombreUsuario)
                 && (directorioActual.permiso.permisoDueño == 4
@@ -117,10 +97,8 @@ public class ControladorCarpeta {
                 || directorioActual.permiso.permisoResto == 5
                 || directorioActual.permiso.permisoResto == 6
                 || directorioActual.permiso.permisoResto == 7));
-            
-    }
 
- 
+    }
 
     public boolean permisoEscritura(Permiso permiso, Usuario usuarioActual) {
         return ((usuarioActual.nombreUsuario.equals(directorioActual.dueño.nombreUsuario)
@@ -132,13 +110,13 @@ public class ControladorCarpeta {
                 || directorioActual.permiso.permisoResto == 6
                 || directorioActual.permiso.permisoResto == 7));
     }
-    
+
     public boolean permisoTotal(Permiso permiso, Usuario usuarioActual) {
         return ((usuarioActual.nombreUsuario.equals(directorioActual.dueño.nombreUsuario) && directorioActual.permiso.permisoDueño == 7) || (directorioActual.permiso.permisoResto == 7));
     }
 
     public Carpeta findDirectory(String ruta, Carpeta carpPadre) {
-        if (carpPadre.carpetas != null){
+        if (carpPadre.carpetas != null) {
             for (Carpeta nodo : carpPadre.carpetas) {
                 if (nodo.nombreDirectorio.equals(ruta)) {
                     return nodo;
@@ -184,7 +162,7 @@ public class ControladorCarpeta {
             // Encuentra la carpeta/archivo de Origen
             if (carpetasRuta.get(0).nombreDirectorio.equals(rutasOrigen[0])) {
                 carpOrigen = carpetasRuta.get(0);
-                 aux = carpOrigen;
+                aux = carpOrigen;
                 esRutaInicialOrigen = true;
             } else {
                 carpOrigen = directorioActual;
@@ -251,8 +229,8 @@ public class ControladorCarpeta {
             }
         }
     }
-      
-       public String cp(String origen, String destino) {
+
+    public String cp(String origen, String destino) {
         if (origen.isEmpty() || destino.isEmpty()) {
             return "No es posible mover un archivo sin ruta de origen o destino";
         } else {
@@ -268,7 +246,7 @@ public class ControladorCarpeta {
             // Encuentra la carpeta/archivo de Destino
             if (carpetasRuta.get(0).nombreDirectorio.equals(rutasDestino[0])) {
                 carpDestino = carpetasRuta.get(0);
-                 aux2 = carpDestino;
+                aux2 = carpDestino;
                 esRutaInicialDestino = true;
             } else {
                 carpDestino = directorioActual;
@@ -284,7 +262,7 @@ public class ControladorCarpeta {
             // Encuentra la carpeta/archivo de Origen
             if (carpetasRuta.get(0).nombreDirectorio.equals(rutasOrigen[0])) {
                 carpOrigen = carpetasRuta.get(0);
-                 aux = carpOrigen;
+                aux = carpOrigen;
                 esRutaInicialOrigen = true;
             } else {
                 carpOrigen = directorioActual;
@@ -303,7 +281,7 @@ public class ControladorCarpeta {
                 Boolean esArchivoOrigen = false;
                 Archivo archvOrigen = null;
                 Archivo archvDestino = null;
-                if (aux.archivos != null){
+                if (aux.archivos != null) {
                     for (Archivo arch : aux.archivos) {
                         if (rutasOrigen[rutasOrigen.length - 1].equals(arch.nombreArch)) {
                             esArchivoOrigen = true;
@@ -311,7 +289,7 @@ public class ControladorCarpeta {
                         }
                     }
                 }
-                if (aux2.archivos != null){
+                if (aux2.archivos != null) {
                     for (Archivo arch : aux2.archivos) {
                         if (rutasDestino[rutasDestino.length - 1].equals(arch.nombreArch)) {
                             esArchivoDestino = true;
@@ -346,8 +324,8 @@ public class ControladorCarpeta {
             }
         }
     }
-      
-     public String cat(String nombreArchivo, Usuario usuarioActual) {
+
+    public String cat(String nombreArchivo, Usuario usuarioActual) {
         String contenido = "";
         if (directorioActual.archivos != null) {
             for (Archivo arch : directorioActual.archivos) {
@@ -356,14 +334,7 @@ public class ControladorCarpeta {
                         contenido = contenido.concat(" ").concat(line);
                     }
                     if (!contenido.isEmpty()) {
-                        if ((usuarioActual.nombreUsuario.equals(directorioActual.dueño.nombreUsuario)
-                                && (directorioActual.permiso.permisoDueño == 4
-                                || directorioActual.permiso.permisoDueño == 5
-                                || directorioActual.permiso.permisoDueño == 6
-                                || directorioActual.permiso.permisoDueño == 7)) || (directorioActual.permiso.permisoResto == 4
-                                || directorioActual.permiso.permisoResto == 5
-                                || directorioActual.permiso.permisoResto == 6
-                                || directorioActual.permiso.permisoResto == 7)) {
+                        if (permisoLectura(directorioActual.permiso, usuarioActual)) {
                             return contenido;
                         }
                         return "No se tiene permiso para realizar esta acción";
@@ -376,20 +347,20 @@ public class ControladorCarpeta {
     }
 
     public String rm(String nombreArchivo, Usuario usuarioActual) {
-            if (directorioActual.archivos != null) {
-                for (Archivo arch : directorioActual.archivos) {
-                    if (arch.nombreArch.equals(nombreArchivo)) {
-                        if ((usuarioActual.nombreUsuario.equals(directorioActual.dueño.nombreUsuario) && directorioActual.permiso.permisoDueño == 7) || (directorioActual.permiso.permisoResto == 7)) {
-                            directorioActual.archivos.remove(arch);
-                            return "El archivo se elimino con exito";
-                        }
-                        return "No se tiene permiso para realizar esta acción";
+        if (directorioActual.archivos != null) {
+            for (Archivo arch : directorioActual.archivos) {
+                if (arch.nombreArch.equals(nombreArchivo)) {
+                    if (permisoTotal(directorioActual.permiso, usuarioActual)) {
+                        directorioActual.archivos.remove(arch);
+                        return "El archivo se eliminó con exito";
                     }
+                    return "No se tiene permiso para realizar esta acción";
                 }
-                return "El archivo no pudo ser borrado, chequee que el mismo exista bajo la ruta";
-            } else {
-                return "El directorio actual no posee archivos";
             }
+            return "El archivo no pudo ser borrado, chequee que el mismo exista bajo la ruta";
+        } else {
+            return "El directorio actual no posee archivos";
+        }
     }
 
     public String cd(String ruta) {
@@ -401,9 +372,9 @@ public class ControladorCarpeta {
             Carpeta carpDestino = null;
             String[] rutasDestino = ruta.substring(1).split("/");
             Boolean esRutaInicialDestino = false;
-            
-            if (ruta.equals("..")){
-                if (directorioActual.nombreDirectorio.equals("Inicio")){
+
+            if (ruta.equals("..")) {
+                if (directorioActual.nombreDirectorio.equals("Inicio")) {
                     return "No se puede realizar esta accion";
                 }
                 carpetasRuta.remove(carpetasRuta.size() - 1);
@@ -417,7 +388,7 @@ public class ControladorCarpeta {
                 nuevaRuta.add(carpDestino);
                 esRutaInicialDestino = true;
             }
-            
+
             for (String r : rutasDestino) {
                 if (!esRutaInicialDestino) {
                     aux = carpDestino;
@@ -437,62 +408,63 @@ public class ControladorCarpeta {
             }
         }
     }
-    
+
     public String permisosLinux(int permiso) {
-        switch (permiso)
-        {
+        switch (permiso) {
             case 0:
-                return("- - -");
+                return ("- - -");
             case 1:
-                return("- - x");
+                return ("- - x");
             case 2:
-                return("- w -");
+                return ("- w -");
             case 3:
-                return("- w x");
+                return ("- w x");
             case 4:
-                return("r - -");
+                return ("r - -");
             case 5:
-                return("r - x");
+                return ("r - x");
             case 6:
-                return("r w -");
+                return ("r w -");
             case 7:
-                return("r w x");
+                return ("r w x");
         }
         return "";
     }
 
-    public String ls(){
-           if (directorioActual.archivos.isEmpty() && directorioActual.carpetas.isEmpty()){
-               return "Esta carpeta no tiene contenido";
-           }else{
-              String espacio = " ";
-              String contenido = "\n";
-              if (!directorioActual.archivos.isEmpty()){
-                for (Archivo arch: directorioActual.archivos){
+    public String ls() {
+        if (directorioActual.archivos.isEmpty() && directorioActual.carpetas.isEmpty()) {
+            return "Esta carpeta no tiene contenido";
+        } else {
+            String espacio = " ";
+            String contenido = "\n";
+            if (!directorioActual.archivos.isEmpty()) {
+                for (Archivo arch : directorioActual.archivos) {
                     String permisosDeDueño = this.permisosLinux(arch.permiso.permisoDueño);
                     String permisosDeGrupo = this.permisosLinux(arch.permiso.permisoGrupo);
                     String permisosDeResto = this.permisosLinux(arch.permiso.permisoResto);
                     contenido = contenido + permisosDeDueño + espacio + permisosDeGrupo + espacio + permisosDeResto + espacio + arch.dueño.nombreUsuario + espacio + arch.fechaHora + espacio + arch.nombreArch + "\n";
                 }
-             }
-              if (!directorioActual.carpetas.isEmpty()){
-                for (Carpeta carp: directorioActual.carpetas){
+            }
+            if (!directorioActual.carpetas.isEmpty()) {
+                for (Carpeta carp : directorioActual.carpetas) {
                     String permisosDeDueño = this.permisosLinux(carp.permiso.permisoDueño);
                     String permisosDeGrupo = this.permisosLinux(carp.permiso.permisoGrupo);
                     String permisosDeResto = this.permisosLinux(carp.permiso.permisoResto);
                     contenido = contenido + permisosDeDueño + espacio + permisosDeGrupo + espacio + permisosDeResto + espacio + carp.dueño.nombreUsuario + espacio + carp.fechaHora + espacio + carp.nombreDirectorio + "\n";
-                 }
-              }
-             return contenido;
-           }
-    };
+                }
+            }
+            return contenido;
+        }
+    }
+
+    ;
 
     public String chmod(String permiso, String nombreArchivo, Usuario usuarioActual) {
         if (!nombreArchivo.isEmpty()) {
             if (directorioActual.archivos != null) {
                 for (Archivo arch : directorioActual.archivos) {
                     if (arch.nombreArch.equals(nombreArchivo)) {
-                        if (usuarioActual.nombreUsuario.equals(directorioActual.dueño.nombreUsuario) || !usuarioActual.esAdmin) {
+                        if (usuarioActual.nombreUsuario.equals(directorioActual.dueño.nombreUsuario) || usuarioActual.esAdmin) {
                             String[] permisoSeparado = permiso.split("(?!^)");
                             if (permisoSeparado.length == 3) {
                                 int[] permisoInt = new int[3];
@@ -511,7 +483,7 @@ public class ControladorCarpeta {
                             return "El permiso que indicó no es correcto";
                         }
                         return "No se tiene permiso para realizar esta acción";
-                    }                   
+                    }
                 }
                 return "El archivo no pudo ser borrado, chequee que el mismo exista bajo la ruta";
             }
@@ -541,7 +513,7 @@ public class ControladorCarpeta {
         }
         return "El nombre de archivo o usuario ingresado está vacío";
     }
-    
+
     public String catGrep(String nombreArchivo, String palabraABuscar, Usuario usuarioActual) {
         for (Archivo arch : directorioActual.archivos) {
             if (directorioActual.archivos != null) {
@@ -554,5 +526,5 @@ public class ControladorCarpeta {
         }
         return "No se pudo encontrar el archivo";
     }
-    
+
 }
