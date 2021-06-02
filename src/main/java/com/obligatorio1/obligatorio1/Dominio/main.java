@@ -17,14 +17,12 @@ public class main {
             String[] comando = comandoHistory.split(" ");
             int largo = comando.length;
             CU.usuarioActual.agregarComando(comandoHistory);
-            switch (largo)
-            {
+            switch (largo) {
                 case 0:
                     System.out.println("");
                     break;
                 case 1:
-                    switch(comando[0])
-                    {
+                    switch (comando[0]) {
                         case "whoami":
                             System.out.println(CU.whoami());
                             break;
@@ -44,8 +42,7 @@ public class main {
                     }
                     break;
                 case 2:
-                    switch(comando[0])
-                    {
+                    switch (comando[0]) {
                         case "useradd":
                             System.out.println(CU.useradd(comando[1]));
                             break;
@@ -74,7 +71,7 @@ public class main {
                             System.out.println(CA.rm(comando[1], CU.usuarioActual));
                             break;
                         case "cd":
-                            System.out.println(CA.cd(comando[1]));
+                            System.out.println(CA.cd(comando[1], CU.usuarioActual));
                             break;
                         case "ls":
                             if (comando[1].equals("-l")) {
@@ -84,47 +81,65 @@ public class main {
                             }
                             break;
                         default:
-                            System.out.println("Comando no válido"); 
+                            System.out.println("Comando no válido");
                             break;
                     }
-                     break;
+                    break;
                 case 3:
-                    switch (comando[0])
-                    {
+                    switch (comando[0]) {
                         case "mv":
-                            System.out.println(CA.mv(comando[1],comando[2]));
+                            System.out.println(CA.mv(comando[1], comando[2], CU.usuarioActual));
                             break;
                         case "cp":
-                            System.out.println(CA.cp(comando[1],comando[2]));
+                            System.out.println(CA.cp(comando[1], comando[2], CU.usuarioActual));
                             break;
                         case "chmod":
-                            System.out.println(CA.chmod(comando[1],comando[2], CU.usuarioActual));
+                            System.out.println(CA.chmod(comando[1], comando[2], CU.usuarioActual));
                             break;
                         case "chown":
-                            System.out.println(CA.chown(comando[1],comando[2], CU.usuarios, CU.usuarioActual));
+                            System.out.println(CA.chown(comando[1], comando[2], CU.usuarios, CU.usuarioActual));
                             break;
                         default:
                             System.out.println("Comando no válido");
                             break;
                     }
-                     break;
+                    break;
                 case 4:
-                    switch (comando[0])
-                    {
+                    switch (comando[0]) {
                         case "echo":
                             System.out.println(CA.echo(comando[1], comando[3], CU.usuarioActual));
                             break;
                         case "history":
-                            /*System.out.println(CA.grepHistory(comando[3]));*/
+                            System.out.println(CU.historyGrep(comando[3]));
                             break;
                         default:
                             System.out.println("Comando no válido");
                             break;
                     }
-                     break;
+                    break;
                 case 5:
-                    if (comando[0].equals("cat")) {
-                        /*System.out.println(CA.grepCat(comando[1],comando[4]))*/;
+                    switch (comando[0]) {
+                        case "cat":
+                            System.out.println(CA.catGrep(comando[1],comando[4], CU.usuarioActual));
+                            break;
+                        case "ls":
+                            System.out.println(CA.lsGrep(comando[4]));
+                            break;
+                        case "echo":
+                            System.out.println(CA.echo(comando[1] + " " + comando[2], comando[4], CU.usuarioActual));
+                            break;
+                        default:
+                            System.out.println("Comando no válido");
+                            break;
+                    }
+                    break;
+                default:
+                    if (comando[0].equals("echo")) {
+                        String texto = "";
+                        for (int i = 1; i < comando.length - 2; i++) {
+                            texto = texto + " " + comando[i];
+                        }
+                        System.out.println(CA.echo(texto, comando[4], CU.usuarioActual));
                     } else {
                         System.out.println("Comando no válido");
                     }
