@@ -193,8 +193,8 @@ public class ControladorCarpeta {
     }
 
     public Carpeta findDirectory(String ruta, Carpeta carpPadre, Usuario usuarioActual) {
-        if (this.permisoLectura(carpPadre.permiso, usuarioActual, carpPadre, null)){
             if (carpPadre.carpetas != null) {
+                 if (this.permisoLectura(carpPadre.permiso, usuarioActual, carpPadre, null)){
                 for (Carpeta nodo : carpPadre.carpetas) {
                     if (nodo.nombreDirectorio.equals(ruta)) {
                         return nodo;
@@ -378,6 +378,7 @@ public class ControladorCarpeta {
     }
 
     public String cd(String ruta, Usuario usuarioActual) {
+        // Para este metodo 
         if (ruta.isEmpty()) {
             return "La ruta especificada es incorrecta";
         } else {
