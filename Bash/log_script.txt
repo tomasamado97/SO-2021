@@ -1,4 +1,0 @@
-El usuario ingresó: 
-1
-12312321
-4

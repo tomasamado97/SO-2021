@@ -1,4 +1,4 @@
-package com.obligatorio1.obligatorio1.Dominio;
+package Dominio;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

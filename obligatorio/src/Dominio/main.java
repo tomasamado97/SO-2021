@@ -1,10 +1,9 @@
-package com.obligatorio1.obligatorio1.Dominio;
+package Dominio;
 
 import java.util.Scanner;
 
 public class main {
 
-    @SuppressWarnings("empty-statement")
     public static void main(String[] args) {
         ControladorUsuario CU = new ControladorUsuario();
         ControladorCarpeta CA = new ControladorCarpeta(CU.getUserByName("root"));
