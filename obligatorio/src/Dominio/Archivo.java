@@ -16,7 +16,7 @@ public class Archivo {
     }
 
     public Archivo(int permisoDueño, int permisoGrupo, int permisoResto, String nombreArch, Usuario dueño) {
-        this.linea = null;
+        this.linea = new ArrayList<String>();
         this.permiso = new Permiso(permisoDueño,permisoGrupo,permisoResto);
         this.nombreArch = nombreArch;
         this.dueño = dueño;

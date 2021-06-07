@@ -138,7 +138,7 @@ public class main {
                         for (int i = 1; i < comando.length - 2; i++) {
                             texto = texto + " " + comando[i];
                         }
-                        System.out.println(CA.echo(texto, comando[4], CU.usuarioActual));
+                        System.out.println(CA.echo(texto, comando[comando.length - 1], CU.usuarioActual));
                     } else {
                         System.out.println("Comando no válido");
                     }

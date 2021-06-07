@@ -77,12 +77,14 @@ public class ControladorCarpeta {
     }
 
     public String echo(String texto, String nombreArchivo, Usuario usuarioActual) {
-        String textoSinComillas = texto.substring(0).substring(texto.length() -1);
+        String textoSinComillas = texto.substring(2, texto.length() -1);
         for (Archivo arch : directorioActual.archivos) {
             if (arch.nombreArch.equals(nombreArchivo)) {
                 if (permisoEscritura(directorioActual.permiso, usuarioActual, directorioActual, arch)) {
                     arch.linea.add(textoSinComillas);
+                    return "Se agregó la linea con exito.";
                 }
+                System.out.println(permisoEscritura(directorioActual.permiso, usuarioActual, directorioActual, arch));
                 return "No se tiene permiso para realizar esta acción";
             }
         }
@@ -345,11 +347,11 @@ public class ControladorCarpeta {
             for (Archivo arch : directorioActual.archivos) {
                 if (arch.nombreArch.equals(nombreArchivo)) {
                     for (String line : arch.linea) {
-                        contenido = contenido.concat(" ").concat(line);
+                        contenido = contenido.concat("\n").concat(line);
                     }
                     if (!contenido.isEmpty()) {
                         if (permisoLectura(directorioActual.permiso, usuarioActual, directorioActual, null)) {
-                            return contenido;
+                            return contenido;     
                         }
                         return "No se tiene permiso para realizar esta acción";
                     }
