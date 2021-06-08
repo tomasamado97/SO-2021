@@ -15,11 +15,11 @@ public class ControladorUsuario {
         Usuario root = new Usuario("root", "root", true); // usuario inicial no autenticado, privilegiado
         usuarios.add(root);
     }
-    
-    public Usuario getUserByName(String nombreUser){
-        if (usuarios != null){
-            for (Usuario user: usuarios){
-                if (user.nombreUsuario.equals(nombreUser)){
+
+    public Usuario getUserByName(String nombreUser) {
+        if (usuarios != null) {
+            for (Usuario user : usuarios) {
+                if (user.nombreUsuario.equals(nombreUser)) {
                     return user;
                 }
             }
@@ -30,12 +30,15 @@ public class ControladorUsuario {
 
     public String userdel(String nombreUsuario) {
         if (usuarioActual.esAdmin) {
-            boolean seBorroUsuario = usuarios.removeIf(user -> (user.nombreUsuario.equals(nombreUsuario)));
-            if (seBorroUsuario) {
-                return "El usuario se borró con éxito";
-            } else {
-                return "error: El usuario a borrar no existe";
+            if (!nombreUsuario.equals(usuarioActual.nombreUsuario)) {
+                boolean seBorroUsuario = usuarios.removeIf(user -> (user.nombreUsuario.equals(nombreUsuario)));
+                if (seBorroUsuario) {
+                    return "El usuario se borró con éxito";
+                } else {
+                    return "error: El usuario a borrar no existe";
+                }
             }
+            return "error: No se puede borrar el usuario admin";
         }
         return "error: El usuario actual no cuenta con los privilegios para realizar esta acción";
     }
@@ -73,7 +76,7 @@ public class ControladorUsuario {
         return "error: No se encontró el usuario";
     }
 
-   public String passwd(String nombreUsuario) {
+    public String passwd(String nombreUsuario) {
         if (usuarioActual.esAdmin || usuarioActual.nombreUsuario.equals(nombreUsuario)) {
             System.out.println("Ingrese la contraseña");
             Scanner in = new Scanner(System.in);
@@ -87,7 +90,7 @@ public class ControladorUsuario {
                 for (Usuario user : usuarios) {
                     if (user.nombreUsuario.equals(nombreUsuario)) {
                         user.setPassword(password1);
-                        return "Se cambió la contraseña de "+ nombreUsuario + " correctamente";
+                        return "Se cambió la contraseña de " + nombreUsuario + " correctamente";
                     }
                 }
                 return "error: El usuario indicado no existe";
@@ -100,15 +103,15 @@ public class ControladorUsuario {
     public String whoami() {
         return usuarioActual.nombreUsuario;
     }
-    
+
     public String history() {
         String history = "";
         for (String comando : usuarioActual.comandos) {
             history = history + comando + "\n";
         }
         return history;
-    } 
-    
+    }
+
     public String historyGrep(String palabraABuscar) {
         for (String comando : usuarioActual.comandos) {
             if (comando.contains(palabraABuscar)) {
