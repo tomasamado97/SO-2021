@@ -77,7 +77,8 @@ public class ControladorCarpeta {
     }
 
     public String echo(String texto, String nombreArchivo, Usuario usuarioActual) {
-        String textoSinComillas = texto.substring(1, texto.length() -1);
+        String textoSinEspacios = texto.strip();
+        String textoSinComillas = textoSinEspacios.substring(1, textoSinEspacios.length() -1);
         for (Archivo arch : directorioActual.archivos) {
             if (arch.nombreArch.equals(nombreArchivo)) {
                 if (permisoEscritura(directorioActual.permiso, usuarioActual, directorioActual, arch)) {
