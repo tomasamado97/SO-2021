@@ -77,7 +77,7 @@ public class ControladorCarpeta {
     }
 
     public String echo(String texto, String nombreArchivo, Usuario usuarioActual) {
-        String textoSinEspacios = texto.strip();
+        String textoSinEspacios = texto.trim();
         String textoSinComillas = textoSinEspacios.substring(1, textoSinEspacios.length() -1);
         for (Archivo arch : directorioActual.archivos) {
             if (arch.nombreArch.equals(nombreArchivo)) {
@@ -85,7 +85,6 @@ public class ControladorCarpeta {
                     arch.linea.add(textoSinComillas);
                     return "Se agregó la línea " + texto + " al archivo " + nombreArchivo + " con éxito";
                 }
-                System.out.println(permisoEscritura(directorioActual.permiso, usuarioActual, directorioActual, arch));
                 return "error: No se tiene permiso para realizar esta acción";
             }
         }
@@ -138,41 +137,41 @@ public class ControladorCarpeta {
     public boolean permisoEscritura(Permiso permiso, Usuario usuarioActual, Carpeta carpeta, Archivo archivo) {
         if (carpeta != null && archivo != null){
             return (((usuarioActual.nombreUsuario.equals(carpeta.dueño.nombreUsuario)
-                    && carpeta.permiso.permisoDueño == 2
+                    && (carpeta.permiso.permisoDueño == 2
                     || carpeta.permiso.permisoDueño == 3
                     || carpeta.permiso.permisoDueño == 6
-                    || carpeta.permiso.permisoDueño == 7) || (carpeta.permiso.permisoResto == 2
+                    || carpeta.permiso.permisoDueño == 7)) || (carpeta.permiso.permisoResto == 2
                     || carpeta.permiso.permisoResto == 3
                     || carpeta.permiso.permisoResto == 6
                     || carpeta.permiso.permisoResto == 7))
                     && ((usuarioActual.nombreUsuario.equals(archivo.dueño.nombreUsuario)
-                    && archivo.permiso.permisoDueño == 2
+                    && (archivo.permiso.permisoDueño == 2
                     || archivo.permiso.permisoDueño == 3
                     || archivo.permiso.permisoDueño == 6
-                    || archivo.permiso.permisoDueño == 7) || (archivo.permiso.permisoResto == 2
+                    || archivo.permiso.permisoDueño == 7)) || (archivo.permiso.permisoResto == 2
                     || archivo.permiso.permisoResto == 3
                     || archivo.permiso.permisoResto == 6
                     || archivo.permiso.permisoResto == 7)));
         }
         if (carpeta != null){
             return ((usuarioActual.nombreUsuario.equals(carpeta.dueño.nombreUsuario)
-                    && carpeta.permiso.permisoDueño == 2
+                    && (carpeta.permiso.permisoDueño == 2
                     || carpeta.permiso.permisoDueño == 3
                     || carpeta.permiso.permisoDueño == 6
                     || carpeta.permiso.permisoDueño == 7) || (carpeta.permiso.permisoResto == 2
                     || carpeta.permiso.permisoResto == 3
                     || carpeta.permiso.permisoResto == 6
-                    || carpeta.permiso.permisoResto == 7));
+                    || carpeta.permiso.permisoResto == 7)));
         }
         if (archivo != null){
             return ((usuarioActual.nombreUsuario.equals(archivo.dueño.nombreUsuario)
-                    && archivo.permiso.permisoDueño == 2
+                    && (archivo.permiso.permisoDueño == 2
                     || archivo.permiso.permisoDueño == 3
                     || archivo.permiso.permisoDueño == 6
                     || archivo.permiso.permisoDueño == 7) || (archivo.permiso.permisoResto == 2
                     || archivo.permiso.permisoResto == 3
                     || archivo.permiso.permisoResto == 6
-                    || archivo.permiso.permisoResto == 7));
+                    || archivo.permiso.permisoResto == 7)));
         }
         return false;
     }
