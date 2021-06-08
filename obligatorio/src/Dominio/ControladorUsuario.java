@@ -10,9 +10,9 @@ public class ControladorUsuario {
 
     public ControladorUsuario() {
         usuarios = new ArrayList<Usuario>();
-        usuarioActual = new Usuario("visita", "1234", false);
+        usuarioActual = new Usuario("visita", "1234", false); // usuario inicial autenticado, no privilegiado
         usuarios.add(usuarioActual);
-        Usuario root = new Usuario("root", "root", true);
+        Usuario root = new Usuario("root", "root", true); // usuario inicial no autenticado, privilegiado
         usuarios.add(root);
     }
     
@@ -32,19 +32,19 @@ public class ControladorUsuario {
         if (usuarioActual.esAdmin) {
             boolean seBorroUsuario = usuarios.removeIf(user -> (user.nombreUsuario.equals(nombreUsuario)));
             if (seBorroUsuario) {
-                return "El usuario se borro con exito";
+                return "El usuario se borró con éxito";
             } else {
-                return "El usuario a borrar no existe";
+                return "error: El usuario a borrar no existe";
             }
         }
-        return "El usuario actual no cuenta con los privilegios para realizar esta acción";
+        return "error: El usuario actual no cuenta con los privilegios para realizar esta acción";
     }
 
     public String useradd(String nombreUsuario) {
         if (usuarioActual.esAdmin) {
             for (Usuario user : usuarios) {
                 if (nombreUsuario.equals(user.nombreUsuario)) {
-                    return "Ya existe un usuario con ese nombre";
+                    return "error: Ya existe un usuario con ese nombre";
                 }
             }
             Scanner in = new Scanner(System.in);
@@ -52,9 +52,9 @@ public class ControladorUsuario {
             String password = in.nextLine();
             Usuario nuevoUser = new Usuario(nombreUsuario, password, false);
             usuarios.add(nuevoUser);
-            return "El usuario se agrego con exito";
+            return "El usuario " + nombreUsuario + " se agregó con éxito";
         }
-        return "El usuario actual no cuenta con los privilegios para realizar esta acción";
+        return "error: El usuario actual no cuenta con los privilegios para realizar esta acción";
     }
 
     public String su(String nombreUsuario) {
@@ -65,36 +65,36 @@ public class ControladorUsuario {
                 String password = in.nextLine();
                 if (user.password.equals(password)) {
                     usuarioActual = user;
-                    return "Te has autenticado con exito";
+                    return nombreUsuario + " se autenticó con éxito";
                 }
-                return "El username y la password no son correctos";
+                return "error: El usuario y la contraseña no son correctos";
             }
         }
-        return "No se encontro el usuario con nombre" + nombreUsuario;
+        return "error: No se encontró el usuario";
     }
 
-   public String passwd(String nombreUser) {
-        if (usuarioActual.esAdmin || usuarioActual.nombreUsuario.equals(nombreUser)) {
+   public String passwd(String nombreUsuario) {
+        if (usuarioActual.esAdmin || usuarioActual.nombreUsuario.equals(nombreUsuario)) {
             System.out.println("Ingrese la contraseña");
             Scanner in = new Scanner(System.in);
             String password1 = in.nextLine();
             System.out.println("Ingrese la contraseña nuevamente");
             String password2 = in.nextLine();
             if (password1.isEmpty() || password2.isEmpty()) {
-                return "No se puede crear una contraseña";
+                return "error: No se puede crear una contraseña vacía";
             }
             if (password1.equals(password2)) {
                 for (Usuario user : usuarios) {
-                    if (user.nombreUsuario.equals(nombreUser)) {
+                    if (user.nombreUsuario.equals(nombreUsuario)) {
                         user.setPassword(password1);
-                        return "Se cambió la contraseña correctamente";
+                        return "Se cambió la contraseña de "+ nombreUsuario + " correctamente";
                     }
                 }
-                return "El usuario indicado no existe";
+                return "error: El usuario indicado no existe";
             }
-            return "Las contraseñas no coinciden";
+            return "error: Las contraseñas no coinciden";
         }
-        return "El usuario actual no cuenta con los privilegios para realizar esta acción";
+        return "error: El usuario actual no cuenta con los privilegios para realizar esta acción";
     }
 
     public String whoami() {
@@ -115,7 +115,7 @@ public class ControladorUsuario {
                 return comando;
             }
         }
-        return "No se encontró la palabra en ninguno de los comandos ingresados";
+        return "error: No se encontró la palabra en ninguno de los comandos ingresados";
     }
 
 }

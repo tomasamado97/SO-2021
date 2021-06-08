@@ -21,7 +21,7 @@ public class Archivo {
         this.nombreArch = nombreArch;
         this.dueño = dueño;
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-DD HH:mm:ss");
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String fechaHora = now.format(format);
         this.fechaHora = fechaHora;
     }
