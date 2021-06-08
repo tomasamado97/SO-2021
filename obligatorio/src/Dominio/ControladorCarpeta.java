@@ -233,9 +233,7 @@ public class ControladorCarpeta {
                     carpDestino = findDirectory(ruta, carpDestino, usuarioActual);
                 }
                 esRutaInicialDestino = false;
-                if (carpDestino == null) {
-                    return "error: La ruta de destino especificada no es correcta";
-                }
+                
             }
 
             // Encuentra la carpeta/archivo de Origen
@@ -252,9 +250,7 @@ public class ControladorCarpeta {
                     carpOrigen = findDirectory(ruta, carpOrigen, usuarioActual);
                 }
                 esRutaInicialOrigen = false;
-                if (carpOrigen == null) {
-                    return "error: La ruta de origen especificada no es correcta";
-                }
+                
             }
 
             // Chequea que sea carpeta o archivo y que existan
