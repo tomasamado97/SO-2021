@@ -81,7 +81,7 @@ public class ControladorCarpeta {
         String textoSinComillas = textoSinEspacios.substring(1, textoSinEspacios.length() -1);
         for (Archivo arch : directorioActual.archivos) {
             if (arch.nombreArch.equals(nombreArchivo)) {
-                if (permisoEscritura(directorioActual.permiso, usuarioActual, directorioActual, arch)) {
+                if (permisoEscritura(arch.permiso, usuarioActual, null, arch)) {
                     arch.linea.add(textoSinComillas);
                     return "Se agregó la línea " + texto + " al archivo " + nombreArchivo + " con éxito";
                 }
@@ -195,12 +195,15 @@ public class ControladorCarpeta {
     }
 
     public Carpeta findDirectory(String ruta, Carpeta carpPadre, Usuario usuarioActual) {
-            if (carpPadre.carpetas != null) {
-                 if (this.permisoLectura(carpPadre.permiso, usuarioActual, carpPadre, null)){
-                for (Carpeta nodo : carpPadre.carpetas) {
-                    if (nodo.nombreDirectorio.equals(ruta)) {
-                        return nodo;
+        if (carpPadre != null){
+                if (carpPadre.carpetas != null) {
+                     if (this.permisoLectura(carpPadre.permiso, usuarioActual, carpPadre, null)){
+                    for (Carpeta nodo : carpPadre.carpetas) {
+                        if (nodo.nombreDirectorio.equals(ruta)) {
+                            return nodo;
+                        }
                     }
+                    return null;
                 }
                 return null;
             }
@@ -345,13 +348,13 @@ public class ControladorCarpeta {
                     for (String line : arch.linea) {
                         contenido = contenido.concat("\n").concat(line);
                     }
-                    if (!contenido.isEmpty()) {
-                        if (permisoLectura(directorioActual.permiso, usuarioActual, directorioActual, null)) {
-                            return contenido;     
-                        }
-                        return "error: No se tiene permiso para realizar esta acción";
-                    }
-                    return "error: El archivo no tiene contenido";
+                     if (permisoLectura(arch.permiso, usuarioActual, null, arch)) {
+                         if (!contenido.isEmpty()) {
+                            return contenido;  
+                         }
+                        return "error: El archivo no tiene contenido";
+                     }
+                    return "error: No se tiene permiso para realizar esta acción";
                 }
             }
         }
