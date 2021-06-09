@@ -310,6 +310,10 @@ public class ControladorCarpeta {
                 if (this.permisoTotal(carpDestino.permiso, usuarioActual, carpDestino, null)) {
                     // agrego la carpeta al destino
                     Carpeta nuevaCarpeta = new Carpeta(carpOrigen.nombreDirectorio, 7, 7, 5, carpOrigen.carpetaPadre);
+                    nuevaCarpeta.archivos = carpOrigen.archivos;
+                    nuevaCarpeta.carpetas = carpOrigen.carpetas;
+                    nuevaCarpeta.fechaHora = carpOrigen.fechaHora;
+                    nuevaCarpeta.dueño = carpOrigen.dueño;
                     carpDestino.carpetas.add(nuevaCarpeta);
                     if (onlyMove) {
                         // Borro la carpeta del origen
