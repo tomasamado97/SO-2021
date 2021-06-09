@@ -285,11 +285,13 @@ public class ControladorCarpeta {
                     if (carpDestino != null) {
                         if (this.permisoTotal(archvOrigen.permiso, usuarioActual, null, archvOrigen)) {
                             // muevo el archivo de origen a destino
-                            carpDestino.archivos.add(archvOrigen);
+                            Archivo nuevoArch = new Archivo(7,7,5, archvOrigen.nombreArch, usuarioActual);
+                            carpDestino.archivos.add(nuevoArch);
                             if (onlyMove) {
                                 aux.archivos.remove(archvOrigen);
+                                return "Se movió el archivo de origen a destino con éxito";
                             }
-                            return "Se movió el archivo de origen a destino con éxito";
+                            return "Se copió el archivo de origen a destino con éxito";
                         }
                         return "error: No se tienen permisos para realizar esta acción";
                     } else {
@@ -307,7 +309,8 @@ public class ControladorCarpeta {
             if (carpDestino != null) {
                 if (this.permisoTotal(carpDestino.permiso, usuarioActual, carpDestino, null)) {
                     // agrego la carpeta al destino
-                    carpDestino.carpetas.add(carpOrigen);
+                    Carpeta nuevaCarpeta = new Carpeta(carpOrigen.nombreDirectorio, 7, 7, 5, carpOrigen.carpetaPadre);
+                    carpDestino.carpetas.add(nuevaCarpeta);
                     if (onlyMove) {
                         // Borro la carpeta del origen
                         aux.carpetas.remove(carpOrigen);
@@ -477,9 +480,7 @@ public class ControladorCarpeta {
             }
             return contenido;
         }
-    }
-
-    ;
+    };
 
     public String chmod(String permiso, String nombreArchivo, Usuario usuarioActual) {
         if (directorioActual.archivos != null) {
