@@ -106,16 +106,16 @@ public class ControladorUsuario {
 
     public String history() {
         String history = "";
-        for (String comando : usuarioActual.comandos) {
-            history = history + usuarioActual.comandos.indexOf(comando) + " " + comando + "\n";
+        for(int i = 0; i <= usuarioActual.comandos.size()-1; i++) {
+            history = history + i + " " + usuarioActual.comandos.get(i) + "\n";
         }
         return history;
     }
 
     public String historyGrep(String palabraABuscar) {
-        for (String comando : usuarioActual.comandos) {
-            if (comando.contains(palabraABuscar)) {
-                return usuarioActual.comandos.indexOf(comando) + " " + comando;
+        for(int i = 0; i <= usuarioActual.comandos.size()-1; i++) {
+            if (usuarioActual.comandos.get(i).contains(palabraABuscar)) {
+                return i + " " + usuarioActual.comandos.get(i);
             }
         }
         return "error: No se encontró la palabra en ninguno de los comandos ingresados";
