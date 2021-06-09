@@ -25,7 +25,7 @@ public class Carpeta {
         this.archivos = new ArrayList<Archivo>();
         this.carpetaPadre = carpetaPadre;
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("uuuu/M/d h:m:s");
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String fechaHora = now.format(format);
         this.fechaHora = fechaHora;
     }
