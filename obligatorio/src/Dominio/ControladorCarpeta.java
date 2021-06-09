@@ -22,11 +22,18 @@ public class ControladorCarpeta {
         return ruta;
     }
 
-    public String mkdir(String nombreDir, Usuario usuarioActual) {
+   public String mkdir(String nombreDir, Usuario usuarioActual) {
         if (directorioActual.carpetas != null) {
             for (Carpeta directorio : directorioActual.carpetas) {
                 if (directorio.nombreDirectorio.equals(nombreDir)) {
                     return "error: Ya existe un directorio con ese nombre";
+                }
+            }
+        }
+        if (directorioActual.carpetas != null) {
+            for (Archivo arch : directorioActual.archivos) {
+                if (arch.nombreArch.equals(nombreDir)) {
+                    return "error: Existe un archivo con ese nombre";
                 }
             }
         }
@@ -37,7 +44,6 @@ public class ControladorCarpeta {
             return "Se creó " + nuevoDir.nombreDirectorio + " en " + directorioActual.nombreDirectorio;
         }
         return "error: No se tiene permiso para realizar esta acción";
-
     }
 
     public String rmdir(String nombreDir, Usuario usuarioActual) {
@@ -59,21 +65,27 @@ public class ControladorCarpeta {
         }
     }
 
-    public String touch(String nombreArchivo, Usuario usuarioActual) {
+   public String touch(String nombreArchivo, Usuario usuarioActual) {
+        if (directorioActual.carpetas != null) {
+            for (Carpeta directorio : directorioActual.carpetas) {
+                if (directorio.nombreDirectorio.equals(nombreArchivo)) {
+                    return "error: Existe un directorio con ese nombre";
+                }
+            }
+        }
         if (directorioActual.archivos != null) {
             for (Archivo arch : directorioActual.archivos) {
                 if (arch.nombreArch.equals(nombreArchivo)) {
-                    return "error: Ya existe un archivo con este nombre";
+                    return "error: Ya existe un archivo con ese nombre";
                 }
             }
-            if (permisoTotal(directorioActual.permiso, usuarioActual, directorioActual, null)) {
-                Archivo nuevoArchivo = new Archivo(7, 7, 5, nombreArchivo, usuarioActual);
-                directorioActual.archivos.add(nuevoArchivo);
-                return "El archivo " + nombreArchivo + " se agregó con exito";
-            }
-            return "error: No se tiene permiso para realizar esta acción";
         }
-        return "error: No se pudo crear el archivo";
+        if (permisoTotal(directorioActual.permiso, usuarioActual, directorioActual, null)) {
+            Archivo nuevoArchivo = new Archivo(7, 7, 5, nombreArchivo, usuarioActual);
+            directorioActual.archivos.add(nuevoArchivo);
+            return "El archivo " + nombreArchivo + " se agregó con exito";
+        }
+        return "error: No se tiene permiso para realizar esta acción";
     }
 
     public String echo(String texto, String nombreArchivo, Usuario usuarioActual) {
@@ -215,6 +227,38 @@ public class ControladorCarpeta {
         return null;
     }
 
+    public void copiarCarpeta(Carpeta destino, Carpeta origen, Usuario usuarioActual){
+         ArrayList<Archivo> nuevosArchivos = new ArrayList<Archivo>();
+         ArrayList<Carpeta> nuevasCarpetas = new ArrayList<Carpeta>();
+        if (origen.archivos != null){
+            for (Archivo arch: origen.archivos){
+                Archivo nuevoArch = new Archivo(7,7,5, arch.nombreArch, usuarioActual);
+                ArrayList<String> nuevoContenido = new ArrayList<String>();
+                if (arch.linea.size() > 0){
+                    for (String line: arch.linea){
+                        nuevoContenido.add(line);
+                    }
+                }
+                nuevoArch.linea = nuevoContenido;
+                nuevoArch.dueño = arch.dueño;
+                nuevoArch.fechaHora = arch.fechaHora;
+                nuevosArchivos.add(nuevoArch);
+            }
+        }
+        
+        if (origen.carpetas != null){
+            for (Carpeta carp: origen.carpetas){
+                Carpeta nuevaCarpeta = new Carpeta(carp.nombreDirectorio, 7, 7, 5, destino);
+                this.copiarCarpeta(nuevaCarpeta, carp, usuarioActual);
+                nuevaCarpeta.fechaHora = carp.fechaHora;
+                nuevaCarpeta.dueño = carp.dueño;
+            }
+        }
+        destino.carpetas = nuevasCarpetas;
+        destino.archivos = nuevosArchivos;
+    }
+    
+    
     public String handleFiles(String origen, String destino, Usuario usuarioActual, Boolean onlyMove) {
         Carpeta carpOrigen = null;
         Carpeta aux = null;
@@ -286,6 +330,15 @@ public class ControladorCarpeta {
                         if (this.permisoTotal(archvOrigen.permiso, usuarioActual, null, archvOrigen)) {
                             // muevo el archivo de origen a destino
                             Archivo nuevoArch = new Archivo(7,7,5, archvOrigen.nombreArch, usuarioActual);
+                            ArrayList<String> nuevoContenido = new ArrayList<String>();
+                            if (archvOrigen.linea.size() > 0){
+                                for (String line: archvOrigen.linea){
+                                    nuevoContenido.add(line);
+                                }
+                            }
+                            nuevoArch.linea = nuevoContenido;
+                            nuevoArch.dueño = archvOrigen.dueño;
+                            nuevoArch.fechaHora = archvOrigen.fechaHora;
                             carpDestino.archivos.add(nuevoArch);
                             if (onlyMove) {
                                 aux.archivos.remove(archvOrigen);
@@ -309,9 +362,8 @@ public class ControladorCarpeta {
             if (carpDestino != null) {
                 if (this.permisoTotal(carpDestino.permiso, usuarioActual, carpDestino, null)) {
                     // agrego la carpeta al destino
-                    Carpeta nuevaCarpeta = new Carpeta(carpOrigen.nombreDirectorio, 7, 7, 5, carpOrigen.carpetaPadre);
-                    nuevaCarpeta.archivos = carpOrigen.archivos;
-                    nuevaCarpeta.carpetas = carpOrigen.carpetas;
+                    Carpeta nuevaCarpeta = new Carpeta(carpOrigen.nombreDirectorio, 7, 7, 5, carpDestino);
+                    this.copiarCarpeta(nuevaCarpeta, carpOrigen, usuarioActual);
                     nuevaCarpeta.fechaHora = carpOrigen.fechaHora;
                     nuevaCarpeta.dueño = carpOrigen.dueño;
                     carpDestino.carpetas.add(nuevaCarpeta);
@@ -471,7 +523,7 @@ public class ControladorCarpeta {
                     String permisosDeDueño = this.permisosLinux(arch.permiso.permisoDueño);
                     String permisosDeGrupo = this.permisosLinux(arch.permiso.permisoGrupo);
                     String permisosDeResto = this.permisosLinux(arch.permiso.permisoResto);
-                    contenido = contenido + permisosDeDueño + espacio + permisosDeGrupo + espacio + permisosDeResto + espacio + arch.dueño.nombreUsuario + espacio + arch.fechaHora + espacio + arch.nombreArch + "\n";
+                    contenido = contenido + permisosDeDueño + espacio + permisosDeGrupo + espacio + permisosDeResto + espacio + arch.dueño.nombreUsuario + espacio + arch.fechaHora + espacio + arch.nombreArch + ".txt" + "\n";
                 }
             }
             if (!directorioActual.carpetas.isEmpty()) {
@@ -536,37 +588,61 @@ public class ControladorCarpeta {
     }
 
     public String catGrep(String nombreArchivo, String palabraABuscar, Usuario usuarioActual) {
-        for (Archivo arch : directorioActual.archivos) {
-            if (directorioActual.archivos != null) {
-                if (cat(nombreArchivo, usuarioActual).contains(palabraABuscar)) {
-                    return "La palabra existe dentro del archivo";
+        if (directorioActual.archivos != null) {
+            for (Archivo arch : directorioActual.archivos) {
+                if (arch.nombreArch.equals(nombreArchivo)) {
+                    if (permisoLectura(arch.permiso, usuarioActual, null, arch)) {
+                        for (String line : arch.linea) {
+                            if (line.contains(palabraABuscar)) {
+                                return palabraABuscar;
+                            }
+                        }
+                        return "error: La palabra no se encuentra dentro del archivo indicado";
+                    }
+                    return "error: No se tiene permiso para realizar esta acción";
                 }
-                return "error: La palabra no se encuentra dentro del archivo indicado";
             }
         }
         return "error: No se pudo encontrar el archivo";
     }
 
-    public String lsGrep(String palabraABuscar) {
+   public String lsGrep(String palabraABuscar) {
         String retornoArch = "";
         String retornoCarp = "";
-        if (directorioActual.archivos != null) {
+        boolean encontreCarp = false;
+        boolean encontreArch = false;
+       
+        if (directorioActual.archivos.isEmpty() && directorioActual.carpetas.isEmpty()) {
+            return "No existen archivos/carpetas.";
+        }
+       
+        if (!directorioActual.archivos.isEmpty()) {
             for (Archivo arch : directorioActual.archivos) {
                 if (arch.nombreArch.equals(palabraABuscar)) {
-                    retornoArch = retornoArch + arch.nombreArch + "\n";
+                    retornoArch = retornoArch + arch.nombreArch + ".txt" + "\n";
+                    encontreArch = true;
                 }
             }
-        } else if (directorioActual.carpetas != null) {
-            for (Carpeta carp : directorioActual.carpetas) {
-                if (carp.nombreDirectorio.equals(palabraABuscar)) {
-                    retornoCarp = retornoCarp + carp.nombreDirectorio + "\n";
-                }
-
-            }
-        } else {
-            return "error: No se pudo encontrar el archivo o carpeta";
         }
-        return retornoArch + retornoCarp;
+        if (!directorioActual.carpetas.isEmpty()) {
+            for (Carpeta carp : directorioActual.carpetas) {
+                if (carp.nombreDirectorio.equals(palabraABuscar)) {   
+                    retornoCarp = retornoCarp + carp.nombreDirectorio + "\n";
+                    encontreCarp = true;
+                }
+            }
+        }
+       
+        if(encontreArch && encontreCarp) {
+            return retornoArch + retornoCarp;
+        } else {
+            if(encontreArch) {
+                return retornoArch;
+            } else {
+                return retornoCarp;
+            }
+        }
+       
     }
 
 }

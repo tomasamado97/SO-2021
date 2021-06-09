@@ -15,7 +15,9 @@ public class main {
             String comandoHistory = in.nextLine();
             String[] comando = comandoHistory.split(" ");
             int largo = comando.length;
-            CU.usuarioActual.agregarComando(comandoHistory);
+            if (CU.usuarioActual.comandos.size() == 0 || !CU.usuarioActual.comandos.get(CU.usuarioActual.comandos.size() -1).equals(comandoHistory)){
+                CU.usuarioActual.agregarComando(comandoHistory);
+            }
             switch (largo) {
                 case 0:
                     System.out.println("");
@@ -113,7 +115,11 @@ public class main {
                             }
                             break;
                         case "history":
-                            System.out.println(CU.historyGrep(comando[3]));
+                            if (comando[1].equals("|")) {
+                                System.out.println(CU.historyGrep(comando[3]));
+                            } else {
+                                System.out.println("Comando no válido");
+                            }
                             break;
                         default:
                             System.out.println("Comando no válido");
@@ -123,10 +129,18 @@ public class main {
                 case 5:
                     switch (comando[0]) {
                         case "cat":
-                            System.out.println(CA.catGrep(comando[1], comando[4], CU.usuarioActual));
+                            if (comando[2].equals("|")) {
+                                System.out.println(CA.catGrep(comando[1], comando[4], CU.usuarioActual));
+                            } else {
+                                System.out.println("Comando no válido");
+                            }
                             break;
                         case "ls":
-                            System.out.println(CA.lsGrep(comando[4]));
+                            if (comando[2].equals("|")) {
+                                System.out.println(CA.lsGrep(comando[4]));
+                            } else {
+                                System.out.println("Comando no válido");
+                            }
                             break;
                         case "echo":
                             if (comando[4].equals(">>")) {

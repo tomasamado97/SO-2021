@@ -107,7 +107,7 @@ public class ControladorUsuario {
     public String history() {
         String history = "";
         for (String comando : usuarioActual.comandos) {
-            history = history + comando + "\n";
+            history = history + usuarioActual.comandos.indexOf(comando) + " " + comando + "\n";
         }
         return history;
     }
@@ -115,7 +115,7 @@ public class ControladorUsuario {
     public String historyGrep(String palabraABuscar) {
         for (String comando : usuarioActual.comandos) {
             if (comando.contains(palabraABuscar)) {
-                return comando;
+                return usuarioActual.comandos.indexOf(comando) + " " + comando;
             }
         }
         return "error: No se encontró la palabra en ninguno de los comandos ingresados";
