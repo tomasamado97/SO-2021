@@ -106,7 +106,11 @@ public class main {
                 case 4:
                     switch (comando[0]) {
                         case "echo":
-                            System.out.println(CA.echo(comando[1], comando[3], CU.usuarioActual));
+                            if (comando[3].equals(">>")) {
+                                System.out.println("Comando no válido");
+                            } else {
+                                System.out.println(CA.echo(comando[1], comando[3], CU.usuarioActual));
+                            }
                             break;
                         case "history":
                             System.out.println(CU.historyGrep(comando[3]));
@@ -119,13 +123,17 @@ public class main {
                 case 5:
                     switch (comando[0]) {
                         case "cat":
-                            System.out.println(CA.catGrep(comando[1],comando[4], CU.usuarioActual));
+                            System.out.println(CA.catGrep(comando[1], comando[4], CU.usuarioActual));
                             break;
                         case "ls":
                             System.out.println(CA.lsGrep(comando[4]));
                             break;
                         case "echo":
-                            System.out.println(CA.echo(comando[1] + " " + comando[2], comando[4], CU.usuarioActual));
+                            if (comando[4].equals(">>")) {
+                                System.out.println("Comando no válido");
+                            } else {
+                                System.out.println(CA.echo(comando[1] + " " + comando[2], comando[4], CU.usuarioActual));
+                            }
                             break;
                         default:
                             System.out.println("Comando no válido");
@@ -133,7 +141,7 @@ public class main {
                     }
                     break;
                 default:
-                    if (comando[0].equals("echo")) {
+                    if (comando[0].equals("echo") && !comando[comando.length - 1].equals(">>") && comando[comando.length - 2].equals(">>")) {
                         String texto = "";
                         for (int i = 1; i < comando.length - 2; i++) {
                             texto = texto + " " + comando[i];
