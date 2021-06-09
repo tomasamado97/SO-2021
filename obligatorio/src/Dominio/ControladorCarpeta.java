@@ -479,7 +479,7 @@ public class ControladorCarpeta {
             if (directorioActual.archivos != null) {
                 for (Archivo arch : directorioActual.archivos) {
                     if (arch.nombreArch.equals(nombreArchivo)) {
-                        if (usuarioActual.nombreUsuario.equals(directorioActual.dueño.nombreUsuario) || usuarioActual.esAdmin) {
+                        if (usuarioActual.nombreUsuario.equals(arch.dueño.nombreUsuario) || usuarioActual.esAdmin) {
                             String[] permisoSeparado = permiso.split("(?!^)");
                             if (permisoSeparado.length == 3) {
                                 int[] permisoInt = new int[3];
