@@ -108,42 +108,54 @@ public class ControladorCarpeta {
 
     public boolean permisoLectura(Permiso permiso, Usuario usuarioActual, Carpeta carpeta, Archivo archivo) {
         if (carpeta != null && archivo != null) {
-            return (((usuarioActual.nombreUsuario.equals(carpeta.dueño.nombreUsuario)
-                    && (carpeta.permiso.permisoDueño == 4
-                    || carpeta.permiso.permisoDueño == 5
-                    || carpeta.permiso.permisoDueño == 6
-                    || carpeta.permiso.permisoDueño == 7)) || (carpeta.permiso.permisoResto == 4
-                    || carpeta.permiso.permisoResto == 5
-                    || carpeta.permiso.permisoResto == 6
-                    || carpeta.permiso.permisoResto == 7))
-                    && ((usuarioActual.nombreUsuario.equals(archivo.dueño.nombreUsuario)
-                    && (archivo.permiso.permisoDueño == 4
-                    || archivo.permiso.permisoDueño == 5
-                    || archivo.permiso.permisoDueño == 6
-                    || archivo.permiso.permisoDueño == 7)) || (archivo.permiso.permisoResto == 4
-                    || archivo.permiso.permisoResto == 5
-                    || archivo.permiso.permisoResto == 6
-                    || archivo.permiso.permisoResto == 7)));
+            boolean permisoArchivo, permisoCarpeta;
+            if (usuarioActual.nombreUsuario.equals(carpeta.dueño.nombreUsuario)) {
+                permisoCarpeta = (carpeta.permiso.permisoDueño == 4
+                        || carpeta.permiso.permisoDueño == 5
+                        || carpeta.permiso.permisoDueño == 6
+                        || carpeta.permiso.permisoDueño == 7);
+            } else {
+                permisoCarpeta = (carpeta.permiso.permisoResto == 4
+                        || carpeta.permiso.permisoResto == 5
+                        || carpeta.permiso.permisoResto == 6
+                        || carpeta.permiso.permisoResto == 7);
+            }
+            if (usuarioActual.nombreUsuario.equals(archivo.dueño.nombreUsuario)) {
+                permisoArchivo = (archivo.permiso.permisoDueño == 4
+                        || archivo.permiso.permisoDueño == 5
+                        || archivo.permiso.permisoDueño == 6
+                        || archivo.permiso.permisoDueño == 7);
+            } else {
+                permisoArchivo = (archivo.permiso.permisoResto == 4
+                        || archivo.permiso.permisoResto == 5
+                        || archivo.permiso.permisoResto == 6
+                        || archivo.permiso.permisoResto == 7);
+            }
+            return permisoArchivo && permisoCarpeta;
         }
         if (carpeta != null) {
-            return ((usuarioActual.nombreUsuario.equals(carpeta.dueño.nombreUsuario)
-                    && (carpeta.permiso.permisoDueño == 4
-                    || carpeta.permiso.permisoDueño == 5
-                    || carpeta.permiso.permisoDueño == 6
-                    || carpeta.permiso.permisoDueño == 7)) || (carpeta.permiso.permisoResto == 4
+            if (usuarioActual.nombreUsuario.equals(carpeta.dueño.nombreUsuario)) {
+                return (carpeta.permiso.permisoDueño == 4
+                        || carpeta.permiso.permisoDueño == 5
+                        || carpeta.permiso.permisoDueño == 6
+                        || carpeta.permiso.permisoDueño == 7);
+            }
+            return (carpeta.permiso.permisoResto == 4
                     || carpeta.permiso.permisoResto == 5
                     || carpeta.permiso.permisoResto == 6
-                    || carpeta.permiso.permisoResto == 7));
+                    || carpeta.permiso.permisoResto == 7);
         }
         if (archivo != null) {
-            return ((usuarioActual.nombreUsuario.equals(archivo.dueño.nombreUsuario)
-                    && (archivo.permiso.permisoDueño == 4
-                    || archivo.permiso.permisoDueño == 5
-                    || archivo.permiso.permisoDueño == 6
-                    || archivo.permiso.permisoDueño == 7)) || (archivo.permiso.permisoResto == 4
+            if (usuarioActual.nombreUsuario.equals(archivo.dueño.nombreUsuario)) {
+                return (archivo.permiso.permisoDueño == 4
+                        || archivo.permiso.permisoDueño == 5
+                        || archivo.permiso.permisoDueño == 6
+                        || archivo.permiso.permisoDueño == 7);
+            }
+            return (archivo.permiso.permisoResto == 4
                     || archivo.permiso.permisoResto == 5
                     || archivo.permiso.permisoResto == 6
-                    || archivo.permiso.permisoResto == 7));
+                    || archivo.permiso.permisoResto == 7);
         }
         return false;
 
@@ -151,60 +163,84 @@ public class ControladorCarpeta {
 
     public boolean permisoEscritura(Permiso permiso, Usuario usuarioActual, Carpeta carpeta, Archivo archivo) {
         if (carpeta != null && archivo != null) {
-            return (((usuarioActual.nombreUsuario.equals(carpeta.dueño.nombreUsuario)
-                    && (carpeta.permiso.permisoDueño == 2
-                    || carpeta.permiso.permisoDueño == 3
-                    || carpeta.permiso.permisoDueño == 6
-                    || carpeta.permiso.permisoDueño == 7)) || (carpeta.permiso.permisoResto == 2
-                    || carpeta.permiso.permisoResto == 3
-                    || carpeta.permiso.permisoResto == 6
-                    || carpeta.permiso.permisoResto == 7))
-                    && ((usuarioActual.nombreUsuario.equals(archivo.dueño.nombreUsuario)
-                    && (archivo.permiso.permisoDueño == 2
-                    || archivo.permiso.permisoDueño == 3
-                    || archivo.permiso.permisoDueño == 6
-                    || archivo.permiso.permisoDueño == 7)) || (archivo.permiso.permisoResto == 2
-                    || archivo.permiso.permisoResto == 3
-                    || archivo.permiso.permisoResto == 6
-                    || archivo.permiso.permisoResto == 7)));
+            boolean permisoArchivo, permisoCarpeta;
+            if (usuarioActual.nombreUsuario.equals(carpeta.dueño.nombreUsuario)) {
+                permisoCarpeta = (carpeta.permiso.permisoDueño == 2
+                        || carpeta.permiso.permisoDueño == 3
+                        || carpeta.permiso.permisoDueño == 6
+                        || carpeta.permiso.permisoDueño == 7);
+            } else {
+                permisoCarpeta = (carpeta.permiso.permisoResto == 2
+                        || carpeta.permiso.permisoResto == 3
+                        || carpeta.permiso.permisoResto == 6
+                        || carpeta.permiso.permisoResto == 7);
+            }
+            if (usuarioActual.nombreUsuario.equals(archivo.dueño.nombreUsuario)) {
+                permisoArchivo = (archivo.permiso.permisoDueño == 2
+                        || archivo.permiso.permisoDueño == 3
+                        || archivo.permiso.permisoDueño == 6
+                        || archivo.permiso.permisoDueño == 7);
+            } else {
+                permisoArchivo = (archivo.permiso.permisoResto == 2
+                        || archivo.permiso.permisoResto == 3
+                        || archivo.permiso.permisoResto == 6
+                        || archivo.permiso.permisoResto == 7);
+            }
+            return permisoArchivo && permisoCarpeta;
         }
         if (carpeta != null) {
-            return ((usuarioActual.nombreUsuario.equals(carpeta.dueño.nombreUsuario)
-                    && (carpeta.permiso.permisoDueño == 2
-                    || carpeta.permiso.permisoDueño == 3
-                    || carpeta.permiso.permisoDueño == 6
-                    || carpeta.permiso.permisoDueño == 7) || (carpeta.permiso.permisoResto == 2
+            if (usuarioActual.nombreUsuario.equals(carpeta.dueño.nombreUsuario)) {
+                return (carpeta.permiso.permisoDueño == 2
+                        || carpeta.permiso.permisoDueño == 3
+                        || carpeta.permiso.permisoDueño == 6
+                        || carpeta.permiso.permisoDueño == 7);
+            }
+            return (carpeta.permiso.permisoResto == 2
                     || carpeta.permiso.permisoResto == 3
                     || carpeta.permiso.permisoResto == 6
-                    || carpeta.permiso.permisoResto == 7)));
+                    || carpeta.permiso.permisoResto == 7);
         }
         if (archivo != null) {
-            return ((usuarioActual.nombreUsuario.equals(archivo.dueño.nombreUsuario)
-                    && (archivo.permiso.permisoDueño == 2
-                    || archivo.permiso.permisoDueño == 3
-                    || archivo.permiso.permisoDueño == 6
-                    || archivo.permiso.permisoDueño == 7) || (archivo.permiso.permisoResto == 2
+            if (usuarioActual.nombreUsuario.equals(archivo.dueño.nombreUsuario)) {
+                return (archivo.permiso.permisoDueño == 2
+                        || archivo.permiso.permisoDueño == 3
+                        || archivo.permiso.permisoDueño == 6
+                        || archivo.permiso.permisoDueño == 7);
+            }
+            return (archivo.permiso.permisoResto == 2
                     || archivo.permiso.permisoResto == 3
                     || archivo.permiso.permisoResto == 6
-                    || archivo.permiso.permisoResto == 7)));
+                    || archivo.permiso.permisoResto == 7);
         }
         return false;
     }
 
     public boolean permisoTotal(Permiso permiso, Usuario usuarioActual, Carpeta carpeta, Archivo archivo) {
         if (carpeta != null && archivo != null) {
-            return (((usuarioActual.nombreUsuario.equals(carpeta.dueño.nombreUsuario)
-                    && carpeta.permiso.permisoDueño == 7) || (carpeta.permiso.permisoResto == 7))
-                    && ((usuarioActual.nombreUsuario.equals(archivo.dueño.nombreUsuario)
-                    && archivo.permiso.permisoDueño == 7) || (archivo.permiso.permisoResto == 7)));
+            boolean permisoArchivo, permisoCarpeta;
+            if (usuarioActual.nombreUsuario.equals(carpeta.dueño.nombreUsuario)) {
+                permisoCarpeta = carpeta.permiso.permisoDueño == 7;
+            } else {
+                permisoCarpeta = carpeta.permiso.permisoResto == 7;
+            }
+            if (usuarioActual.nombreUsuario.equals(archivo.dueño.nombreUsuario)) {
+                permisoArchivo = archivo.permiso.permisoDueño == 7;
+            } else {
+                permisoArchivo = archivo.permiso.permisoResto == 7;
+            }
+            return permisoArchivo && permisoCarpeta;
         }
         if (carpeta != null) {
-            return ((usuarioActual.nombreUsuario.equals(carpeta.dueño.nombreUsuario)
-                    && carpeta.permiso.permisoDueño == 7) || (carpeta.permiso.permisoResto == 7));
+            if (usuarioActual.nombreUsuario.equals(carpeta.dueño.nombreUsuario)) {
+                return carpeta.permiso.permisoDueño == 7;
+            }
+            return carpeta.permiso.permisoResto == 7;
         }
         if (archivo != null) {
-            return ((usuarioActual.nombreUsuario.equals(archivo.dueño.nombreUsuario)
-                    && archivo.permiso.permisoDueño == 7) || (archivo.permiso.permisoResto == 7));
+            if (usuarioActual.nombreUsuario.equals(archivo.dueño.nombreUsuario)) {
+                return archivo.permiso.permisoDueño == 7;
+            }
+            return archivo.permiso.permisoResto == 7;
         }
         return false;
     }
