@@ -346,7 +346,7 @@ public class ControladorCarpeta {
                                 }
                                 return "Se copió el archivo de origen a destino con éxito";
                             }
-                            return "error: Ya existe un archivo de nombre " + archvOrigen.nombreArch + "en el directorio destino";
+                            return "error: Ya existe un archivo de nombre " + archvOrigen.nombreArch + " en el directorio destino";
                         }
                         return "error: No se tienen permisos para realizar esta acción";
                     } else {
